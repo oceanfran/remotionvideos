@@ -1,4 +1,4 @@
-import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
+import { AbsoluteFill, Audio, Loop, Sequence, staticFile } from "remotion";
 import { SceneHook } from "./scenes/SceneIntro";
 import { SceneCost } from "./scenes/SceneCost";
 import { SceneAIAnswering } from "./scenes/SceneAIAnswering";
@@ -9,7 +9,7 @@ import { SceneSetup } from "./scenes/SceneSetup";
 import { SceneCTA } from "./scenes/SceneCTA";
 
 /*
-  60-second video · 30 fps · 1800 frames total
+  60-second video · 30 fps · 1800 frames · 1080×1920 (9:16 vertical)
 
   Scene                  Seconds   Frames
   ─────────────────────  ────────  ──────
@@ -25,7 +25,7 @@ import { SceneCTA } from "./scenes/SceneCTA";
 
 export const CrecimosVideo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0F1117" }}>
+    <AbsoluteFill style={{ backgroundColor: "#000000" }}>
       {/* Scene 1: The Hook — 0-6s */}
       <Sequence from={0} durationInFrames={180}>
         <SceneHook />
@@ -66,10 +66,10 @@ export const CrecimosVideo: React.FC = () => {
         <SceneCTA />
       </Sequence>
 
-      {/* Voiceover — place voiceover.mp3 in public/ */}
+      {/* Voiceover — full volume */}
       <VoiceoverAudio />
 
-      {/* Background music — place bgmusic.mp3 in public/ */}
+      {/* Background music — loops 30s track across full 60s */}
       <BgMusicAudio />
     </AbsoluteFill>
   );
@@ -88,12 +88,9 @@ const BgMusicAudio: React.FC = () => {
   try {
     const src = staticFile("bgmusic.mp3");
     return (
-      <>
-        <Audio src={src} volume={0.15} />
-        <Sequence from={900}>
-          <Audio src={src} volume={0.15} />
-        </Sequence>
-      </>
+      <Loop durationInFrames={900}>
+        <Audio src={src} volume={0.12} />
+      </Loop>
     );
   } catch {
     return null;

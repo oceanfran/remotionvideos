@@ -1,43 +1,57 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 2 — The Cost  (6-12 s · 180 frames)
-   Dollar amounts float up and vanish like smoke.
+   Dollar amounts spring in large, drift up & dissolve.
+   Apple keynote: dark bg, large bold numbers, clean.
    ────────────────────────────────────────────────── */
 
-const FloatingDollar: React.FC<{
+const FloatingAmount: React.FC<{
   amount: string;
   delay: number;
-  x: number;
-}> = ({ amount, delay, x }) => {
+  y: number;
+}> = ({ amount, delay, y }) => {
   const frame = useCurrentFrame();
-  const op = interpolate(frame - delay, [0, 15, 35, 50], [0, 1, 1, 0], {
+  const { fps } = useVideoConfig();
+
+  const enter = spring({ frame: frame - delay, fps, config: { damping: 12, stiffness: 100 } });
+  const drift = interpolate(frame - delay, [0, 60], [0, -100], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const y = interpolate(frame - delay, [0, 50], [0, -120], {
+  const fadeOut = interpolate(frame - delay, [35, 55], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const scale = interpolate(frame - delay, [35, 50], [1, 0.6], {
+  const scale = interpolate(frame - delay, [35, 55], [1, 0.7], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+
+  const op = Math.min(enter, fadeOut);
 
   return (
     <div
       style={{
         position: "absolute",
-        left: x,
-        top: 480,
+        top: y,
+        left: "50%",
+        transform: `translateX(-50%) translateY(${drift}px) scale(${enter * scale})`,
         opacity: op,
-        transform: `translateY(${y}px) scale(${scale})`,
-        fontSize: 64,
+        fontSize: 96,
         fontWeight: 800,
         color: theme.colors.danger,
-        fontFamily: theme.fonts.heading,
-        textShadow: `0 0 40px ${theme.colors.danger}60`,
+        fontFamily: theme.fonts.display,
+        letterSpacing: -2,
+        textAlign: "center",
+        filter: `blur(${interpolate(frame - delay, [40, 55], [0, 4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}px)`,
       }}
     >
       {amount}
@@ -47,24 +61,15 @@ const FloatingDollar: React.FC<{
 
 export const SceneCost: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // Character + Google animation
-  const charOp = interpolate(frame, [0, 15], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const textSpring = spring({ frame: frame - 5, fps, config: { damping: 15, stiffness: 80 } });
+  const textY = interpolate(textSpring, [0, 1], [50, 0]);
 
-  // Text
-  const textOp = interpolate(frame, [5, 25], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const textY = interpolate(frame, [5, 25], [30, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // "Gone." punch
+  const goneSpring = spring({ frame: frame - 25, fps, config: { damping: 10, stiffness: 150 } });
 
-  const exitOp = interpolate(frame, [160, 180], [1, 0], {
+  const exitOp = interpolate(frame, [155, 180], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -72,8 +77,7 @@ export const SceneCost: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background: theme.colors.bgDark,
-        justifyContent: "center",
+        background: theme.colors.bg,
         alignItems: "center",
         opacity: exitOp,
       }}
@@ -82,87 +86,50 @@ export const SceneCost: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 120,
-          opacity: textOp,
+          top: 320,
+          opacity: textSpring,
           transform: `translateY(${textY}px)`,
           textAlign: "center",
-          zIndex: 2,
+          padding: "0 80px",
         }}
       >
         <div
           style={{
-            fontSize: 42,
+            fontSize: 52,
             fontWeight: 600,
             color: theme.colors.textSecondary,
-            fontFamily: theme.fonts.heading,
+            fontFamily: theme.fonts.display,
+            lineHeight: 1.3,
           }}
         >
-          They called the next company on Google.
-        </div>
-        <div
-          style={{
-            fontSize: 42,
-            fontWeight: 700,
-            color: theme.colors.warning,
-            fontFamily: theme.fonts.heading,
-            marginTop: 12,
-          }}
-        >
-          That revenue? Gone.
+          They called the next
+          <br />
+          company on Google.
         </div>
       </div>
 
-      {/* Generic character with phone */}
+      {/* "Gone." — dramatic */}
       <div
         style={{
-          opacity: charOp,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
           position: "absolute",
-          top: 300,
-          zIndex: 1,
+          top: 560,
+          left: "50%",
+          transform: `translateX(-50%) scale(${goneSpring})`,
+          opacity: goneSpring,
+          fontSize: 80,
+          fontWeight: 800,
+          color: theme.colors.warning,
+          fontFamily: theme.fonts.display,
+          letterSpacing: -1,
         }}
       >
-        {/* head */}
-        <div
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: "50%",
-            background: theme.colors.textMuted,
-          }}
-        />
-        {/* body */}
-        <div
-          style={{
-            width: 100,
-            height: 120,
-            borderRadius: "20px 20px 0 0",
-            background: theme.colors.bgCard,
-            marginTop: -10,
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 30,
-          }}
-        >
-          {/* phone in hand */}
-          <div
-            style={{
-              width: 40,
-              height: 60,
-              borderRadius: 8,
-              background: theme.colors.textMuted,
-              border: `2px solid ${theme.colors.textSecondary}`,
-            }}
-          />
-        </div>
+        Gone.
       </div>
 
       {/* Floating dollar amounts */}
-      <FloatingDollar amount="$800" delay={40} x={350} />
-      <FloatingDollar amount="$3,500" delay={75} x={850} />
-      <FloatingDollar amount="$12,000" delay={110} x={1300} />
+      <FloatingAmount amount="$500" delay={35} y={780} />
+      <FloatingAmount amount="$3,500" delay={65} y={980} />
+      <FloatingAmount amount="$15,000" delay={95} y={1180} />
     </AbsoluteFill>
   );
 };

@@ -1,112 +1,104 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 1 — The Hook  (0-6 s · 180 frames)
-   Three phones ring, nobody answers, "Missed Call"
-   bubbles stack up fast.
+   Large text fades in with spring, three phone
+   outlines ring and show "Missed" — Apple keynote style.
    ────────────────────────────────────────────────── */
 
-const Phone: React.FC<{
-  x: number;
-  y: number;
-  ringStart: number;
-  missStart: number;
+const PhoneOutline: React.FC<{
+  delay: number;
+  missDelay: number;
   label: string;
-}> = ({ x, y, ringStart, missStart, label }) => {
+  y: number;
+}> = ({ delay, missDelay, label, y }) => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // phone appears
-  const phoneOp = interpolate(frame, [ringStart, ringStart + 8], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const enter = spring({ frame: frame - delay, fps, config: { damping: 14, stiffness: 120 } });
+  const missed = spring({ frame: frame - missDelay, fps, config: { damping: 12, stiffness: 100 } });
 
-  // ringing vibration
-  const vibrate =
-    frame >= ringStart && frame < missStart
-      ? Math.sin((frame - ringStart) * 1.8) * 4
-      : 0;
-
-  // missed-call badge
-  const badgeOp = interpolate(frame, [missStart, missStart + 10], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const badgeY = interpolate(frame, [missStart, missStart + 10], [20, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Ringing vibration
+  const isRinging = frame >= delay && frame < missDelay;
+  const vibrate = isRinging ? Math.sin((frame - delay) * 2.2) * 6 : 0;
 
   return (
     <div
       style={{
         position: "absolute",
-        left: x,
         top: y,
-        opacity: phoneOp,
-        transform: `translateX(${vibrate}px)`,
+        left: "50%",
+        transform: `translateX(-50%) translateX(${vibrate}px) scale(${enter})`,
+        opacity: enter,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 16,
       }}
     >
-      {/* phone body */}
+      {/* Phone frame */}
       <div
         style={{
-          width: 120,
-          height: 200,
-          borderRadius: 20,
-          background: theme.colors.bgCard,
-          border: `2px solid ${theme.colors.primaryLight}30`,
+          width: 200,
+          height: 120,
+          borderRadius: 28,
+          border: `3px solid ${isRinging ? theme.colors.accent : theme.colors.textTertiary}`,
+          background: isRinging ? `${theme.colors.accent}08` : "transparent",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 8,
+          gap: 20,
           position: "relative",
         }}
       >
-        {/* notch */}
+        {/* Phone icon */}
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"
+            stroke={isRinging ? theme.colors.accent : theme.colors.textTertiary}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         <div
           style={{
-            position: "absolute",
-            top: 10,
-            width: 50,
-            height: 8,
-            borderRadius: 4,
-            background: theme.colors.bgDark,
-          }}
-        />
-        {/* ring icon */}
-        <div style={{ fontSize: 40 }}>📱</div>
-        <div
-          style={{
-            fontSize: 14,
-            color: theme.colors.textSecondary,
+            fontSize: 24,
+            fontWeight: 600,
+            color: isRinging ? theme.colors.accent : theme.colors.textSecondary,
             fontFamily: theme.fonts.body,
           }}
         >
           {label}
         </div>
-      </div>
 
-      {/* missed call badge */}
-      <div
-        style={{
-          position: "absolute",
-          top: -18,
-          right: -30,
-          opacity: badgeOp,
-          transform: `translateY(${badgeY}px)`,
-          background: theme.colors.danger,
-          borderRadius: 12,
-          padding: "6px 14px",
-          fontSize: 13,
-          fontWeight: 700,
-          color: "white",
-          fontFamily: theme.fonts.body,
-          whiteSpace: "nowrap",
-        }}
-      >
-        Missed Call
+        {/* Missed badge */}
+        <div
+          style={{
+            position: "absolute",
+            top: -16,
+            right: -16,
+            transform: `scale(${missed})`,
+            opacity: missed,
+            background: theme.colors.danger,
+            borderRadius: 20,
+            padding: "8px 20px",
+            fontSize: 18,
+            fontWeight: 700,
+            color: "white",
+            fontFamily: theme.fonts.body,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Missed
+        </div>
       </div>
     </div>
   );
@@ -114,30 +106,28 @@ const Phone: React.FC<{
 
 export const SceneHook: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // Title
-  const titleOp = interpolate(frame, [0, 15], [0, 1], {
+  const titleSpring = spring({ frame, fps, config: { damping: 15, stiffness: 80 } });
+  const titleY = interpolate(titleSpring, [0, 1], [60, 0]);
+
+  const exitOp = interpolate(frame, [155, 180], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Counter that stacks up
-  const missedCount = Math.min(
-    3,
-    frame < 50 ? 0 : frame < 90 ? 1 : frame < 130 ? 2 : 3,
-  );
-
-  // Exit
-  const exitOp = interpolate(frame, [160, 180], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  // Counter
+  const missedCount = frame < 50 ? 0 : frame < 85 ? 1 : frame < 120 ? 2 : 3;
+  const counterSpring = spring({
+    frame: frame - (missedCount === 1 ? 50 : missedCount === 2 ? 85 : 120),
+    fps,
+    config: { damping: 12 },
   });
 
   return (
     <AbsoluteFill
       style={{
-        background: theme.colors.bgDark,
-        justifyContent: "center",
+        background: theme.colors.bg,
         alignItems: "center",
         opacity: exitOp,
       }}
@@ -146,84 +136,67 @@ export const SceneHook: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 100,
-          opacity: titleOp,
+          top: 280,
+          opacity: titleSpring,
+          transform: `translateY(${titleY}px)`,
           textAlign: "center",
-          zIndex: 2,
+          padding: "0 60px",
         }}
       >
         <div
           style={{
-            fontSize: 48,
+            fontSize: 72,
             fontWeight: 700,
-            color: theme.colors.textPrimary,
-            fontFamily: theme.fonts.heading,
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
+            lineHeight: 1.15,
+            letterSpacing: -1,
           }}
         >
-          How many calls did your business
+          How many calls
+          <br />
+          did your business
         </div>
         <div
           style={{
-            fontSize: 48,
+            fontSize: 72,
             fontWeight: 700,
             color: theme.colors.danger,
-            fontFamily: theme.fonts.heading,
+            fontFamily: theme.fonts.display,
+            marginTop: 8,
+            letterSpacing: -1,
           }}
         >
           miss this week?
         </div>
       </div>
 
-      {/* Three phones */}
-      <Phone
-        x={300}
-        y={340}
-        ringStart={20}
-        missStart={50}
-        label="Office"
-      />
-      <Phone
-        x={900}
-        y={360}
-        ringStart={55}
-        missStart={90}
-        label="Front Desk"
-      />
-      <Phone
-        x={1500}
-        y={340}
-        ringStart={95}
-        missStart={130}
-        label="Mobile"
-      />
+      {/* Three phones stacked vertically */}
+      <PhoneOutline delay={15} missDelay={50} label="Office" y={780} />
+      <PhoneOutline delay={50} missDelay={85} label="Front Desk" y={940} />
+      <PhoneOutline delay={85} missDelay={120} label="Mobile" y={1100} />
 
-      {/* Stacking missed-call counter */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 100,
-          display: "flex",
-          gap: 20,
-          zIndex: 2,
-        }}
-      >
-        {missedCount > 0 && (
-          <div
-            style={{
-              background: `${theme.colors.danger}20`,
-              border: `1px solid ${theme.colors.danger}60`,
-              borderRadius: 16,
-              padding: "12px 28px",
-              fontSize: 20,
-              fontWeight: 600,
-              color: theme.colors.dangerLight,
-              fontFamily: theme.fonts.body,
-            }}
-          >
-            {missedCount} Missed Call{missedCount > 1 ? "s" : ""}
-          </div>
-        )}
-      </div>
+      {/* Missed counter */}
+      {missedCount > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 340,
+            transform: `scale(${Math.min(counterSpring, 1)})`,
+            opacity: Math.min(counterSpring, 1),
+            background: `${theme.colors.danger}15`,
+            border: `2px solid ${theme.colors.danger}40`,
+            borderRadius: 24,
+            padding: "18px 48px",
+            fontSize: 32,
+            fontWeight: 700,
+            color: theme.colors.danger,
+            fontFamily: theme.fonts.display,
+          }}
+        >
+          {missedCount} Missed Call{missedCount > 1 ? "s" : ""}
+        </div>
+      )}
     </AbsoluteFill>
   );
 };

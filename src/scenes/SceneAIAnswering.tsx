@@ -1,69 +1,61 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 3 — The AI Answering  (12-24 s · 360 frames)
-   Waveform answers, feature icons pop in one at a time.
+   Big title springs in, waveform animates, features
+   list in vertically. Apple keynote: clean depth.
    ────────────────────────────────────────────────── */
 
-const FeatureIcon: React.FC<{
-  icon: string;
+const FeatureRow: React.FC<{
+  icon: React.ReactNode;
   label: string;
   delay: number;
-  x: number;
-  y: number;
-}> = ({ icon, label, delay, x, y }) => {
+}> = ({ icon, label, delay }) => {
   const frame = useCurrentFrame();
-  const op = interpolate(frame - delay, [0, 15], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const scale = interpolate(frame - delay, [0, 15], [0.5, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const moveY = interpolate(frame - delay, [0, 15], [30, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const { fps } = useVideoConfig();
+
+  const s = spring({ frame: frame - delay, fps, config: { damping: 14, stiffness: 100 } });
+  const x = interpolate(s, [0, 1], [60, 0]);
 
   return (
     <div
       style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        opacity: op,
-        transform: `scale(${scale}) translateY(${moveY}px)`,
+        opacity: s,
+        transform: `translateX(${x}px)`,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        gap: 10,
+        gap: 24,
+        padding: "20px 0",
       }}
     >
       <div
         style={{
-          width: 80,
-          height: 80,
-          borderRadius: 20,
-          background: theme.colors.bgCard,
-          border: `1px solid ${theme.colors.primaryLight}30`,
+          width: 64,
+          height: 64,
+          borderRadius: 16,
+          background: `${theme.colors.accent}12`,
+          border: `1.5px solid ${theme.colors.accent}30`,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          fontSize: 40,
+          flexShrink: 0,
         }}
       >
         {icon}
       </div>
       <div
         style={{
-          fontSize: 16,
+          fontSize: 32,
           fontWeight: 600,
-          color: theme.colors.textPrimary,
+          color: theme.colors.text,
           fontFamily: theme.fonts.body,
-          textAlign: "center",
-          maxWidth: 130,
         }}
       >
         {label}
@@ -72,148 +64,160 @@ const FeatureIcon: React.FC<{
   );
 };
 
+const FeatureIcon: React.FC<{ d: string }> = ({ d }) => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+    <path d={d} stroke={theme.colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export const SceneAIAnswering: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // Background brightening
-  const bgBrightness = interpolate(frame, [0, 40], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const bgColor = `rgb(${15 + bgBrightness * 8}, ${17 + bgBrightness * 10}, ${23 + bgBrightness * 15})`;
+  const titleSpring = spring({ frame: frame - 5, fps, config: { damping: 14, stiffness: 80 } });
+  const titleY = interpolate(titleSpring, [0, 1], [50, 0]);
 
-  // "AI Answers" title
-  const titleOp = interpolate(frame, [5, 25], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const titleY = interpolate(frame, [5, 25], [30, 0], {
+  const waveOp = interpolate(frame, [20, 40], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Waveform
-  const waveOp = interpolate(frame, [15, 35], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const exitOp = interpolate(frame, [340, 360], [1, 0], {
+  const exitOp = interpolate(frame, [335, 360], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   const features = [
-    { icon: "💬", label: "Answers Questions", delay: 80, x: 160, y: 480 },
-    { icon: "📋", label: "Collects Info", delay: 120, x: 420, y: 480 },
-    { icon: "✅", label: "Qualifies Leads", delay: 160, x: 680, y: 480 },
-    { icon: "🔀", label: "Routes to Team", delay: 200, x: 940, y: 480 },
-    { icon: "📞", label: "Transfers Calls", delay: 240, x: 1200, y: 480 },
-    { icon: "📅", label: "Books Appointments", delay: 280, x: 1460, y: 480 },
+    { icon: <FeatureIcon d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />, label: "Answers questions", delay: 80 },
+    { icon: <FeatureIcon d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />, label: "Collects info", delay: 120 },
+    { icon: <FeatureIcon d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3" />, label: "Qualifies leads", delay: 160 },
+    { icon: <FeatureIcon d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />, label: "Routes & transfers", delay: 200 },
+    { icon: <FeatureIcon d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />, label: "Books appointments", delay: 240 },
   ];
 
   return (
     <AbsoluteFill
       style={{
-        background: bgColor,
-        justifyContent: "flex-start",
+        background: theme.colors.bg,
         alignItems: "center",
         opacity: exitOp,
       }}
     >
-      {/* Title */}
+      {/* Label */}
       <div
         style={{
-          marginTop: 80,
-          opacity: titleOp,
+          position: "absolute",
+          top: 200,
+          opacity: titleSpring,
           transform: `translateY(${titleY}px)`,
           textAlign: "center",
         }}
       >
         <div
           style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 500,
             color: theme.colors.accent,
             fontFamily: theme.fonts.body,
-            letterSpacing: 3,
+            letterSpacing: 4,
             textTransform: "uppercase",
-            marginBottom: 12,
+            marginBottom: 20,
           }}
         >
           Now imagine
         </div>
         <div
           style={{
-            fontSize: 52,
+            fontSize: 68,
             fontWeight: 800,
-            fontFamily: theme.fonts.heading,
-            background: theme.colors.gradientPrimary,
+            fontFamily: theme.fonts.display,
+            background: theme.colors.gradientAccent,
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            lineHeight: 1.1,
+            letterSpacing: -1,
           }}
         >
-          Every call gets answered.
+          Every call
+          <br />
+          gets answered.
         </div>
       </div>
 
       {/* Waveform */}
       <div
         style={{
-          marginTop: 50,
+          position: "absolute",
+          top: 600,
           display: "flex",
-          gap: 5,
+          gap: 6,
           alignItems: "center",
           opacity: waveOp,
         }}
       >
-        {Array.from({ length: 30 }).map((_, i) => {
+        {Array.from({ length: 40 }).map((_, i) => {
           const h = interpolate(
-            (frame + i * 4) % 40,
-            [0, 20, 40],
-            [15, 50, 15],
+            (frame + i * 3) % 36,
+            [0, 18, 36],
+            [12, 60, 12],
             { extrapolateRight: "clamp" },
           );
+          const barOp = interpolate(Math.abs(i - 20), [0, 20], [1, 0.3], {
+            extrapolateRight: "clamp",
+          });
           return (
             <div
               key={i}
               style={{
-                width: 6,
+                width: 8,
                 height: h,
-                borderRadius: 3,
-                background: theme.colors.gradientPrimary,
+                borderRadius: 4,
+                background: theme.colors.accent,
+                opacity: barOp,
               }}
             />
           );
         })}
       </div>
 
-      {/* Subtitle below waveform */}
-      <div
-        style={{
-          marginTop: 16,
-          opacity: waveOp,
-          fontSize: 20,
-          color: theme.colors.textSecondary,
-          fontFamily: theme.fonts.body,
-        }}
-      >
-        AI Receptionist Active — 24/7
-      </div>
-
-      {/* Feature icons */}
-      {features.map((f, i) => (
-        <FeatureIcon key={i} {...f} />
-      ))}
-
-      {/* Bottom label row showing current feature being announced */}
+      {/* Active label */}
       <div
         style={{
           position: "absolute",
-          bottom: 60,
+          top: 690,
+          opacity: waveOp,
+          fontSize: 22,
+          fontWeight: 500,
+          color: theme.colors.textSecondary,
+          fontFamily: theme.fonts.body,
+          letterSpacing: 2,
+        }}
+      >
+        AI RECEPTIONIST — 24/7
+      </div>
+
+      {/* Feature list */}
+      <div
+        style={{
+          position: "absolute",
+          top: 800,
+          left: 100,
+          right: 100,
+        }}
+      >
+        {features.map((f, i) => (
+          <FeatureRow key={i} {...f} />
+        ))}
+      </div>
+
+      {/* Progress dots */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 200,
           display: "flex",
-          gap: 16,
+          gap: 14,
         }}
       >
         {features.map((f, i) => {
@@ -222,13 +226,10 @@ export const SceneAIAnswering: React.FC = () => {
             <div
               key={i}
               style={{
-                width: 12,
-                height: 12,
+                width: 10,
+                height: 10,
                 borderRadius: "50%",
-                background: active
-                  ? theme.colors.accent
-                  : `${theme.colors.textMuted}40`,
-                transition: "background 0.3s",
+                background: active ? theme.colors.accent : theme.colors.textTertiary,
               }}
             />
           );

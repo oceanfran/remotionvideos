@@ -1,253 +1,219 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 6 — CRM + Bilingual  (34-40 s · 180 frames)
-   Dashboard materialises, then speech bubble switches
-   between English and Spanish.
+   Dashboard card springs in with staggered rows,
+   then bilingual speech bubble below.
    ────────────────────────────────────────────────── */
 
 export const SceneCRM: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // Title
-  const titleOp = interpolate(frame, [0, 15], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const titleSpring = spring({ frame, fps, config: { damping: 14, stiffness: 80 } });
+  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
 
-  // Dashboard
-  const dashOp = interpolate(frame, [10, 30], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const dashScale = interpolate(frame, [10, 30], [0.92, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const dashSpring = spring({ frame: frame - 12, fps, config: { damping: 16, stiffness: 100 } });
+  const dashScale = interpolate(dashSpring, [0, 1], [0.92, 1]);
 
-  // Rows filling in
-  const row1Op = interpolate(frame, [30, 42], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const row2Op = interpolate(frame, [38, 50], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const row3Op = interpolate(frame, [46, 58], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const row4Op = interpolate(frame, [54, 66], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const row1 = spring({ frame: frame - 28, fps, config: { damping: 14 } });
+  const row2 = spring({ frame: frame - 36, fps, config: { damping: 14 } });
+  const row3 = spring({ frame: frame - 44, fps, config: { damping: 14 } });
+  const row4 = spring({ frame: frame - 52, fps, config: { damping: 14 } });
 
-  // Bilingual section
-  const bilingualOp = interpolate(frame, [90, 110], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  // Switch language every 30 frames
+  // Bilingual
+  const bilingualSpring = spring({ frame: frame - 90, fps, config: { damping: 14 } });
+  const bilingualY = interpolate(bilingualSpring, [0, 1], [40, 0]);
   const isSpanish = frame >= 130;
 
-  const exitOp = interpolate(frame, [160, 180], [1, 0], {
+  const exitOp = interpolate(frame, [155, 180], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   const rows = [
-    { name: "Maria Lopez", status: "Booked", time: "2 min ago", op: row1Op },
-    { name: "John Davis", status: "Qualified", time: "5 min ago", op: row2Op },
-    { name: "Sarah Chen", status: "Follow-up", time: "12 min ago", op: row3Op },
-    { name: "Carlos Ruiz", status: "Booked", time: "18 min ago", op: row4Op },
+    { name: "Maria Lopez", status: "Booked", time: "2m ago", color: theme.colors.success, op: row1 },
+    { name: "John Davis", status: "Qualified", time: "5m ago", color: theme.colors.accent, op: row2 },
+    { name: "Sarah Chen", status: "Follow-up", time: "12m ago", color: theme.colors.orange, op: row3 },
+    { name: "Carlos Ruiz", status: "Booked", time: "18m ago", color: theme.colors.success, op: row4 },
   ];
 
   return (
-    <AbsoluteFill style={{ background: theme.colors.bgDark, opacity: exitOp }}>
+    <AbsoluteFill
+      style={{
+        background: theme.colors.bg,
+        alignItems: "center",
+        opacity: exitOp,
+      }}
+    >
+      {/* Title */}
       <div
         style={{
-          display: "flex",
-          height: "100%",
-          alignItems: "center",
-          padding: "0 100px",
-          gap: 60,
+          position: "absolute",
+          top: 180,
+          opacity: titleSpring,
+          transform: `translateY(${titleY}px)`,
+          textAlign: "center",
         }}
       >
-        {/* Left: Dashboard */}
-        <div style={{ flex: 1.2, display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ opacity: titleOp }}>
-            <div
-              style={{
-                fontSize: 20,
-                fontWeight: 500,
-                color: theme.colors.accent,
-                fontFamily: theme.fonts.body,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              Built-in CRM
-            </div>
-            <div
-              style={{
-                fontSize: 44,
-                fontWeight: 700,
-                color: theme.colors.textPrimary,
-                fontFamily: theme.fonts.heading,
-              }}
-            >
-              Every detail, one place.
-            </div>
-          </div>
-
-          {/* Dashboard panel */}
-          <div
-            style={{
-              opacity: dashOp,
-              transform: `scale(${dashScale})`,
-              background: theme.colors.bgCard,
-              borderRadius: 20,
-              padding: 24,
-              border: `1px solid ${theme.colors.primaryLight}20`,
-            }}
-          >
-            {/* Header row */}
-            <div
-              style={{
-                display: "flex",
-                padding: "8px 16px 16px",
-                borderBottom: `1px solid ${theme.colors.textMuted}20`,
-                gap: 16,
-              }}
-            >
-              {["Customer", "Status", "Time"].map((h) => (
-                <div
-                  key={h}
-                  style={{
-                    flex: 1,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: theme.colors.textMuted,
-                    fontFamily: theme.fonts.body,
-                    textTransform: "uppercase",
-                    letterSpacing: 1,
-                  }}
-                >
-                  {h}
-                </div>
-              ))}
-            </div>
-
-            {/* Data rows */}
-            {rows.map((row, i) => (
-              <div
-                key={i}
-                style={{
-                  opacity: row.op,
-                  display: "flex",
-                  padding: "14px 16px",
-                  borderBottom:
-                    i < rows.length - 1
-                      ? `1px solid ${theme.colors.textMuted}10`
-                      : "none",
-                  gap: 16,
-                }}
-              >
-                <div
-                  style={{
-                    flex: 1,
-                    fontSize: 18,
-                    fontWeight: 600,
-                    color: theme.colors.textPrimary,
-                    fontFamily: theme.fonts.body,
-                  }}
-                >
-                  {row.name}
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    fontWeight: 600,
-                    color:
-                      row.status === "Booked"
-                        ? theme.colors.success
-                        : row.status === "Qualified"
-                          ? theme.colors.accent
-                          : theme.colors.warning,
-                    fontFamily: theme.fonts.body,
-                  }}
-                >
-                  {row.status}
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                    fontSize: 16,
-                    color: theme.colors.textMuted,
-                    fontFamily: theme.fonts.body,
-                  }}
-                >
-                  {row.time}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Bilingual feature */}
         <div
           style={{
-            flex: 0.8,
-            opacity: bilingualOp,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 28,
+            fontSize: 22,
+            fontWeight: 500,
+            color: theme.colors.accent,
+            fontFamily: theme.fonts.body,
+            letterSpacing: 4,
+            textTransform: "uppercase",
+            marginBottom: 16,
           }}
         >
-          <div
-            style={{
-              fontSize: 24,
-              fontWeight: 700,
-              color: theme.colors.textPrimary,
-              fontFamily: theme.fonts.heading,
-              textAlign: "center",
-            }}
-          >
-            Works in English & Spanish
-          </div>
+          Built-in CRM
+        </div>
+        <div
+          style={{
+            fontSize: 56,
+            fontWeight: 700,
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
+            letterSpacing: -1,
+          }}
+        >
+          Every detail, one place.
+        </div>
+      </div>
 
-          {/* Speech bubble */}
-          <div
-            style={{
-              background: theme.colors.bgCard,
-              borderRadius: 24,
-              padding: "32px 40px",
-              border: `1px solid ${theme.colors.accent}30`,
-              position: "relative",
-              minWidth: 400,
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: 40, marginBottom: 16 }}>💬</div>
+      {/* Dashboard */}
+      <div
+        style={{
+          position: "absolute",
+          top: 440,
+          opacity: dashSpring,
+          transform: `scale(${dashScale})`,
+          width: 860,
+          background: theme.colors.bgCard,
+          borderRadius: 24,
+          padding: 28,
+          border: `1px solid ${theme.colors.textTertiary}25`,
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            padding: "12px 20px 18px",
+            borderBottom: `1px solid ${theme.colors.textTertiary}20`,
+            gap: 16,
+          }}
+        >
+          {["Customer", "Status", "Time"].map((h) => (
             <div
+              key={h}
               style={{
-                fontSize: 22,
+                flex: h === "Customer" ? 1.5 : 1,
+                fontSize: 18,
                 fontWeight: 600,
-                color: theme.colors.textPrimary,
-                fontFamily: theme.fonts.body,
-                lineHeight: 1.5,
-              }}
-            >
-              {isSpanish
-                ? '"Hola, ¿en qué puedo ayudarle?"'
-                : '"Hello, how can I help you?"'}
-            </div>
-            <div
-              style={{
-                marginTop: 16,
-                fontSize: 14,
-                fontWeight: 600,
-                color: theme.colors.accent,
+                color: theme.colors.textTertiary,
                 fontFamily: theme.fonts.body,
                 textTransform: "uppercase",
                 letterSpacing: 2,
               }}
             >
-              {isSpanish ? "Español" : "English"}
+              {h}
             </div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {rows.map((row, i) => {
+          const rowX = interpolate(row.op, [0, 1], [40, 0]);
+          return (
+            <div
+              key={i}
+              style={{
+                opacity: row.op,
+                transform: `translateX(${rowX}px)`,
+                display: "flex",
+                padding: "18px 20px",
+                borderBottom: i < rows.length - 1 ? `1px solid ${theme.colors.textTertiary}12` : "none",
+                gap: 16,
+              }}
+            >
+              <div style={{ flex: 1.5, fontSize: 26, fontWeight: 600, color: theme.colors.text, fontFamily: theme.fonts.body }}>
+                {row.name}
+              </div>
+              <div style={{ flex: 1, fontSize: 24, fontWeight: 600, color: row.color, fontFamily: theme.fonts.body }}>
+                {row.status}
+              </div>
+              <div style={{ flex: 1, fontSize: 24, color: theme.colors.textTertiary, fontFamily: theme.fonts.body }}>
+                {row.time}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bilingual */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 220,
+          opacity: bilingualSpring,
+          transform: `translateY(${bilingualY}px)`,
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 28,
+            fontWeight: 700,
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
+            marginBottom: 24,
+          }}
+        >
+          Works in English & Spanish
+        </div>
+
+        <div
+          style={{
+            background: theme.colors.bgCard,
+            borderRadius: 24,
+            padding: "32px 56px",
+            border: `1px solid ${theme.colors.accent}25`,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 30,
+              fontWeight: 600,
+              color: theme.colors.text,
+              fontFamily: theme.fonts.body,
+              lineHeight: 1.5,
+            }}
+          >
+            {isSpanish
+              ? "\"Hola, ¿en qué puedo ayudarle?\""
+              : "\"Hello, how can I help you?\""}
+          </div>
+          <div
+            style={{
+              marginTop: 14,
+              fontSize: 18,
+              fontWeight: 600,
+              color: theme.colors.accent,
+              fontFamily: theme.fonts.body,
+              textTransform: "uppercase",
+              letterSpacing: 3,
+            }}
+          >
+            {isSpanish ? "Español" : "English"}
           </div>
         </div>
       </div>

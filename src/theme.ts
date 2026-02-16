@@ -1,29 +1,26 @@
-// Crecimos brand palette — flat, clean, bold
+// Apple-inspired design system — dark, minimal, spring-driven
 export const theme = {
   colors: {
-    primary: "#4F46E5",
-    primaryLight: "#818CF8",
-    accent: "#06B6D4",
-    accentLight: "#22D3EE",
+    bg: "#000000",
+    bgSubtle: "#0A0A0A",
+    bgCard: "#1C1C1E",
+    bgCardHover: "#2C2C2E",
 
-    bgDark: "#0F1117",
-    bgMid: "#161822",
-    bgCard: "#1C1F2E",
+    text: "#FFFFFF",
+    textSecondary: "#86868B",
+    textTertiary: "#48484A",
 
-    textPrimary: "#FFFFFF",
-    textSecondary: "#94A3B8",
-    textMuted: "#64748B",
+    accent: "#2997FF",
+    accentLight: "#5AC8FA",
+    gradientAccent: "linear-gradient(135deg, #2997FF, #5AC8FA)",
 
-    success: "#10B981",
-    warning: "#F59E0B",
-    danger: "#EF4444",
-    dangerLight: "#F87171",
-
-    gradientPrimary: "linear-gradient(135deg, #4F46E5, #06B6D4)",
-    gradientWarm: "linear-gradient(135deg, #F59E0B, #EF4444)",
+    success: "#30D158",
+    danger: "#FF453A",
+    warning: "#FFD60A",
+    orange: "#FF9F0A",
   },
   fonts: {
-    heading:
+    display:
       '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
     body: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
     mono: '"SF Mono", "Fira Code", Consolas, monospace',

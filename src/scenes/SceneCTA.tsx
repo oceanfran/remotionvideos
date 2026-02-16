@@ -1,63 +1,58 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  Img,
+  interpolate,
+  spring,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 8 — The CTA  (48-60 s · 360 frames)
-   crecimos.com types itself, taglines animate in,
-   final "Never miss another call.", fade to black.
+   Logo springs in, "Crecimos.com" types out,
+   tagline holds, fade to black. Apple keynote outro.
    ────────────────────────────────────────────────── */
 
 export const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Logo entrance — spring scale from 0 → 1, then gentle float
+  const logoSpring = spring({ frame: frame - 5, fps, config: { damping: 12, stiffness: 80 } });
+  const logoFloat = Math.sin(frame * 0.04) * 6;
 
   // "Sign up today" fades in
-  const signUpOp = interpolate(frame, [10, 30], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const signUpY = interpolate(frame, [10, 30], [30, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const signUpSpring = spring({ frame: frame - 30, fps, config: { damping: 15 } });
+  const signUpY = interpolate(signUpSpring, [0, 1], [30, 0]);
 
-  // URL typing effect
-  const url = "crecimos.com";
+  // URL typing effect — "Crecimos.com" with capital C
+  const url = "Crecimos.com";
   const typedLength = Math.min(
     url.length,
     Math.floor(
-      interpolate(frame, [40, 80], [0, url.length], {
+      interpolate(frame, [60, 100], [0, url.length], {
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       }),
     ),
   );
-  const urlOp = interpolate(frame, [35, 45], [0, 1], {
+  const urlOp = interpolate(frame, [55, 65], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   // Cursor blink
-  const cursorOp = frame >= 40 && frame < 120 ? (Math.floor(frame / 8) % 2 === 0 ? 1 : 0) : 0;
+  const cursorOp = frame >= 60 && frame < 140 ? (Math.floor(frame / 8) % 2 === 0 ? 1 : 0) : 0;
 
   // Subtitle
-  const subOp = interpolate(frame, [100, 120], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const subY = interpolate(frame, [100, 120], [20, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const subSpring = spring({ frame: frame - 120, fps, config: { damping: 15 } });
+  const subY = interpolate(subSpring, [0, 1], [30, 0]);
 
-  // Final tagline — hold for 4 seconds starting at frame 180
-  const tagOp = interpolate(frame, [180, 200], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const tagScale = interpolate(frame, [180, 200], [0.9, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Final tagline
+  const tagSpring = spring({ frame: frame - 190, fps, config: { damping: 12, stiffness: 80 } });
+  const tagScale = interpolate(tagSpring, [0, 1], [0.85, 1]);
 
   // Fade to black
   const fadeOut = interpolate(frame, [320, 360], [0, 1], {
@@ -66,19 +61,19 @@ export const SceneCTA: React.FC = () => {
   });
 
   return (
-    <AbsoluteFill style={{ background: theme.colors.bgDark }}>
+    <AbsoluteFill style={{ background: theme.colors.bg }}>
       {/* Subtle radial glow */}
       <div
         style={{
           position: "absolute",
-          width: 800,
-          height: 800,
+          width: 900,
+          height: 900,
           left: "50%",
-          top: "40%",
+          top: "35%",
           transform: "translate(-50%, -50%)",
           borderRadius: "50%",
-          background: `radial-gradient(circle, ${theme.colors.primary}15, transparent 70%)`,
-          filter: "blur(60px)",
+          background: `radial-gradient(circle, ${theme.colors.accent}10, transparent 70%)`,
+          filter: "blur(80px)",
         }}
       />
 
@@ -89,36 +84,54 @@ export const SceneCTA: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          gap: 28,
+          gap: 36,
           zIndex: 1,
         }}
       >
+        {/* Logo */}
+        <div
+          style={{
+            opacity: logoSpring,
+            transform: `scale(${logoSpring}) translateY(${logoFloat}px)`,
+            marginBottom: 20,
+          }}
+        >
+          <Img
+            src={staticFile("logo.png")}
+            style={{
+              width: 220,
+              height: 220,
+              objectFit: "contain",
+            }}
+          />
+        </div>
+
         {/* Sign up today */}
         <div
           style={{
-            opacity: signUpOp,
+            opacity: signUpSpring,
             transform: `translateY(${signUpY}px)`,
-            fontSize: 36,
+            fontSize: 40,
             fontWeight: 600,
             color: theme.colors.textSecondary,
-            fontFamily: theme.fonts.heading,
+            fontFamily: theme.fonts.display,
           }}
         >
           Sign up today.
         </div>
 
-        {/* crecimos.com — typed */}
+        {/* Crecimos.com — typed */}
         <div
           style={{
             opacity: urlOp,
-            fontSize: 88,
+            fontSize: 96,
             fontWeight: 800,
-            fontFamily: theme.fonts.heading,
-            background: theme.colors.gradientPrimary,
+            fontFamily: theme.fonts.display,
+            background: theme.colors.gradientAccent,
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            letterSpacing: -1,
+            letterSpacing: -2,
             display: "flex",
             alignItems: "center",
           }}
@@ -127,12 +140,12 @@ export const SceneCTA: React.FC = () => {
           <span
             style={{
               display: "inline-block",
-              width: 4,
-              height: 80,
+              width: 5,
+              height: 88,
               background: theme.colors.accent,
               marginLeft: 4,
               opacity: cursorOp,
-              borderRadius: 2,
+              borderRadius: 3,
             }}
           />
         </div>
@@ -140,31 +153,37 @@ export const SceneCTA: React.FC = () => {
         {/* Subtitle */}
         <div
           style={{
-            opacity: subOp,
+            opacity: subSpring,
             transform: `translateY(${subY}px)`,
-            fontSize: 28,
+            fontSize: 32,
             color: theme.colors.textSecondary,
             fontFamily: theme.fonts.body,
             textAlign: "center",
+            padding: "0 80px",
           }}
         >
-          Your AI receptionist is 10 minutes away.
+          Your AI receptionist is
+          <br />
+          10 minutes away.
         </div>
 
         {/* Final tagline */}
         <div
           style={{
-            opacity: tagOp,
+            opacity: tagSpring,
             transform: `scale(${tagScale})`,
-            marginTop: 40,
-            fontSize: 48,
+            marginTop: 48,
+            fontSize: 56,
             fontWeight: 800,
-            color: theme.colors.textPrimary,
-            fontFamily: theme.fonts.heading,
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
             textAlign: "center",
+            letterSpacing: -1,
           }}
         >
-          Never miss another call.
+          Never miss
+          <br />
+          another call.
         </div>
       </div>
 

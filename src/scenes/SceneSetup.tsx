@@ -1,63 +1,43 @@
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
    Scene 7 — Easy Setup + Consultation  (40-48 s · 240 frames)
-   Laptop wizard steps animate, green checkmark,
-   then "book a consultation" option.
+   Steps animate in with spring, checkmarks appear,
+   then consultation CTA. Vertical Apple keynote layout.
    ────────────────────────────────────────────────── */
 
 export const SceneSetup: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
-  // Laptop appears
-  const laptopOp = interpolate(frame, [5, 20], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const laptopScale = interpolate(frame, [5, 20], [0.9, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const titleSpring = spring({ frame, fps, config: { damping: 14, stiffness: 80 } });
+  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
 
-  // Wizard steps
-  const step1 = interpolate(frame, [25, 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const step2 = interpolate(frame, [50, 65], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const step3 = interpolate(frame, [75, 90], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const step4 = interpolate(frame, [100, 115], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // Steps
+  const step1 = spring({ frame: frame - 20, fps, config: { damping: 14, stiffness: 100 } });
+  const step2 = spring({ frame: frame - 40, fps, config: { damping: 14, stiffness: 100 } });
+  const step3 = spring({ frame: frame - 60, fps, config: { damping: 14, stiffness: 100 } });
+  const step4 = spring({ frame: frame - 80, fps, config: { damping: 14, stiffness: 100 } });
 
-  // Green checkmark
-  const checkOp = interpolate(frame, [120, 130], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const checkScale = interpolate(frame, [120, 135], [0.3, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  // Bounce
-  const checkBounce = interpolate(frame, [130, 140, 145], [1, 1.15, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Big checkmark
+  const checkSpring = spring({ frame: frame - 100, fps, config: { damping: 10, stiffness: 120 } });
 
-  // Text overlay
-  const textOp = interpolate(frame, [140, 155], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // "Under 10 minutes" text
+  const textSpring = spring({ frame: frame - 120, fps, config: { damping: 14 } });
+  const textY = interpolate(textSpring, [0, 1], [30, 0]);
 
-  // Consultation option
-  const consultOp = interpolate(frame, [170, 185], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const consultY = interpolate(frame, [170, 185], [20, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Consultation
+  const consultSpring = spring({ frame: frame - 155, fps, config: { damping: 14 } });
+  const consultY = interpolate(consultSpring, [0, 1], [30, 0]);
 
-  const exitOp = interpolate(frame, [220, 240], [1, 0], {
+  const exitOp = interpolate(frame, [215, 240], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -72,193 +52,186 @@ export const SceneSetup: React.FC = () => {
   return (
     <AbsoluteFill
       style={{
-        background: theme.colors.bgDark,
-        justifyContent: "center",
+        background: theme.colors.bg,
         alignItems: "center",
         opacity: exitOp,
       }}
     >
+      {/* Title */}
       <div
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 36,
+          position: "absolute",
+          top: 240,
+          opacity: titleSpring,
+          transform: `translateY(${titleY}px)`,
+          textAlign: "center",
         }}
       >
-        {/* Laptop */}
         <div
           style={{
-            opacity: laptopOp,
-            transform: `scale(${laptopScale})`,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            fontSize: 22,
+            fontWeight: 500,
+            color: theme.colors.accent,
+            fontFamily: theme.fonts.body,
+            letterSpacing: 4,
+            textTransform: "uppercase",
+            marginBottom: 16,
           }}
         >
-          {/* Screen */}
-          <div
-            style={{
-              width: 700,
-              height: 420,
-              background: theme.colors.bgCard,
-              borderRadius: "16px 16px 0 0",
-              border: `2px solid ${theme.colors.primaryLight}20`,
-              padding: 32,
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-              position: "relative",
-            }}
-          >
-            {/* Title bar */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: theme.colors.danger }} />
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: theme.colors.warning }} />
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: theme.colors.success }} />
-            </div>
+          Quick Setup
+        </div>
+        <div
+          style={{
+            fontSize: 56,
+            fontWeight: 700,
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
+            letterSpacing: -1,
+          }}
+        >
+          Do it yourself.
+        </div>
+      </div>
 
+      {/* Steps */}
+      <div
+        style={{
+          position: "absolute",
+          top: 520,
+          width: 780,
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
+        }}
+      >
+        {steps.map((s, i) => {
+          const isComplete = s.op > 0.8;
+          const x = interpolate(s.op, [0, 1], [60, 0]);
+          return (
             <div
+              key={i}
               style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: theme.colors.textPrimary,
-                fontFamily: theme.fonts.heading,
-                textAlign: "center",
-                marginBottom: 8,
-              }}
-            >
-              Quick Setup
-            </div>
-
-            {/* Steps */}
-            {steps.map((s, i) => {
-              const isComplete = s.op >= 0.9;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    opacity: s.op,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 16,
-                    padding: "12px 20px",
-                    background: isComplete ? `${theme.colors.success}15` : `${theme.colors.textMuted}10`,
-                    borderRadius: 12,
-                    border: `1px solid ${isComplete ? theme.colors.success : theme.colors.textMuted}30`,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      background: isComplete ? theme.colors.success : theme.colors.bgMid,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontSize: 16,
-                      fontWeight: 700,
-                      color: "white",
-                      fontFamily: theme.fonts.mono,
-                    }}
-                  >
-                    {isComplete ? "✓" : i + 1}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 18,
-                      fontWeight: 600,
-                      color: theme.colors.textPrimary,
-                      fontFamily: theme.fonts.body,
-                    }}
-                  >
-                    {s.label}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Big green checkmark overlay */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
+                opacity: s.op,
+                transform: `translateX(${x}px)`,
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
-                opacity: checkOp,
-                background: `${theme.colors.bgDark}D0`,
-                borderRadius: 16,
+                gap: 24,
+                padding: "24px 32px",
+                background: isComplete ? `${theme.colors.success}10` : theme.colors.bgCard,
+                borderRadius: 20,
+                border: `1.5px solid ${isComplete ? theme.colors.success : theme.colors.textTertiary}25`,
               }}
             >
               <div
                 style={{
-                  transform: `scale(${checkScale * checkBounce})`,
-                  fontSize: 100,
+                  width: 52,
+                  height: 52,
+                  borderRadius: "50%",
+                  background: isComplete ? theme.colors.success : theme.colors.bgCardHover,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexShrink: 0,
                 }}
               >
-                ✅
+                {isComplete ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  <span
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 700,
+                      color: theme.colors.textSecondary,
+                      fontFamily: theme.fonts.mono,
+                    }}
+                  >
+                    {i + 1}
+                  </span>
+                )}
+              </div>
+              <div
+                style={{
+                  fontSize: 30,
+                  fontWeight: 600,
+                  color: theme.colors.text,
+                  fontFamily: theme.fonts.body,
+                }}
+              >
+                {s.label}
               </div>
             </div>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Laptop base */}
-          <div
-            style={{
-              width: 780,
-              height: 20,
-              background: theme.colors.bgCard,
-              borderRadius: "0 0 8px 8px",
-              border: `1px solid ${theme.colors.primaryLight}15`,
-              borderTop: "none",
-            }}
-          />
-        </div>
+      {/* Big checkmark */}
+      <div
+        style={{
+          position: "absolute",
+          top: 1100,
+          opacity: checkSpring,
+          transform: `scale(${checkSpring})`,
+        }}
+      >
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill={theme.colors.success} />
+          <path d="M16 9l-5 5-2.5-2.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
 
-        {/* Text overlay */}
+      {/* "Under 10 minutes" */}
+      <div
+        style={{
+          position: "absolute",
+          top: 1240,
+          opacity: textSpring,
+          transform: `translateY(${textY}px)`,
+          textAlign: "center",
+          padding: "0 60px",
+        }}
+      >
         <div
           style={{
-            opacity: textOp,
-            fontSize: 36,
+            fontSize: 48,
             fontWeight: 700,
-            color: theme.colors.textPrimary,
-            fontFamily: theme.fonts.heading,
-            textAlign: "center",
+            color: theme.colors.text,
+            fontFamily: theme.fonts.display,
           }}
         >
-          Set it up yourself in{" "}
-          <span style={{ color: theme.colors.success }}>under 10 minutes.</span>
+          Under{" "}
+          <span style={{ color: theme.colors.success }}>10 minutes.</span>
         </div>
+      </div>
 
-        {/* Consultation option */}
+      {/* Consultation */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 260,
+          opacity: consultSpring,
+          transform: `translateY(${consultY}px)`,
+          background: theme.colors.bgCard,
+          borderRadius: 20,
+          padding: "28px 44px",
+          border: `1px solid ${theme.colors.accent}25`,
+          textAlign: "center",
+        }}
+      >
         <div
           style={{
-            opacity: consultOp,
-            transform: `translateY(${consultY}px)`,
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            background: theme.colors.bgCard,
-            borderRadius: 16,
-            padding: "18px 32px",
-            border: `1px solid ${theme.colors.accent}30`,
+            fontSize: 26,
+            color: theme.colors.textSecondary,
+            fontFamily: theme.fonts.body,
           }}
         >
-          <div style={{ fontSize: 28 }}>📅</div>
-          <div
-            style={{
-              fontSize: 20,
-              color: theme.colors.textSecondary,
-              fontFamily: theme.fonts.body,
-            }}
-          >
-            Or{" "}
-            <span style={{ color: theme.colors.accent, fontWeight: 700 }}>
-              book a consultation
-            </span>{" "}
-            and we'll help you set it up.
-          </div>
+          Or{" "}
+          <span style={{ color: theme.colors.accent, fontWeight: 700 }}>
+            book a consultation
+          </span>
+          <br />
+          and we'll help you set it up.
         </div>
       </div>
     </AbsoluteFill>

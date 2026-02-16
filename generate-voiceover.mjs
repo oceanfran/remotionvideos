@@ -24,10 +24,11 @@ const body = JSON.stringify({
     similarity_boost: 0.8,
     style: 0.4,
     use_speaker_boost: true,
+    speed: 1.15,
   },
 });
 
-console.log("Generating voiceover with ElevenLabs (Rachel voice)...");
+console.log("Generating voiceover with ElevenLabs (Rachel voice, speed 1.15x)...");
 console.log(`Script length: ${SCRIPT.length} characters`);
 
 const options = {
