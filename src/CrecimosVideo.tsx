@@ -1,52 +1,76 @@
 import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
-import { SceneIntro } from "./scenes/SceneIntro";
-import { SceneProblem } from "./scenes/SceneProblem";
-import { SceneSolution } from "./scenes/SceneSolution";
-import { SceneFeatures } from "./scenes/SceneFeatures";
-import { SceneHowItWorks } from "./scenes/SceneHowItWorks";
-import { SceneResults } from "./scenes/SceneResults";
+import { SceneHook } from "./scenes/SceneIntro";
+import { SceneCost } from "./scenes/SceneCost";
+import { SceneAIAnswering } from "./scenes/SceneAIAnswering";
+import { SceneNoDoubleBook } from "./scenes/SceneNoDoubleBook";
+import { SceneFlexibility } from "./scenes/SceneFlexibility";
+import { SceneCRM } from "./scenes/SceneCRM";
+import { SceneSetup } from "./scenes/SceneSetup";
 import { SceneCTA } from "./scenes/SceneCTA";
+
+/*
+  60-second video · 30 fps · 1800 frames total
+
+  Scene                  Seconds   Frames
+  ─────────────────────  ────────  ──────
+  1. The Hook            0–6       0–180
+  2. The Cost            6–12      180–360
+  3. AI Answering        12–24     360–720
+  4. No Double Booking   24–28     720–840
+  5. Flexibility         28–34     840–1020
+  6. CRM + Bilingual     34–40     1020–1200
+  7. Easy Setup          40–48     1200–1440
+  8. CTA                 48–60     1440–1800
+*/
 
 export const CrecimosVideo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0A0A0F" }}>
-      {/* Scene 1: Intro / Logo Reveal - 0 to 4s */}
-      <Sequence from={0} durationInFrames={120}>
-        <SceneIntro />
+    <AbsoluteFill style={{ backgroundColor: "#0F1117" }}>
+      {/* Scene 1: The Hook — 0-6s */}
+      <Sequence from={0} durationInFrames={180}>
+        <SceneHook />
       </Sequence>
 
-      {/* Scene 2: The Problem - 4s to 9s */}
-      <Sequence from={120} durationInFrames={150}>
-        <SceneProblem />
+      {/* Scene 2: The Cost — 6-12s */}
+      <Sequence from={180} durationInFrames={180}>
+        <SceneCost />
       </Sequence>
 
-      {/* Scene 3: The Solution - 9s to 14s */}
-      <Sequence from={270} durationInFrames={150}>
-        <SceneSolution />
+      {/* Scene 3: AI Answering — 12-24s */}
+      <Sequence from={360} durationInFrames={360}>
+        <SceneAIAnswering />
       </Sequence>
 
-      {/* Scene 4: Key Features - 14s to 20s */}
-      <Sequence from={420} durationInFrames={180}>
-        <SceneFeatures />
+      {/* Scene 4: No Double Booking — 24-28s */}
+      <Sequence from={720} durationInFrames={120}>
+        <SceneNoDoubleBook />
       </Sequence>
 
-      {/* Scene 5: How It Works - 20s to 24s */}
-      <Sequence from={600} durationInFrames={120}>
-        <SceneHowItWorks />
+      {/* Scene 5: Flexibility — 28-34s */}
+      <Sequence from={840} durationInFrames={180}>
+        <SceneFlexibility />
       </Sequence>
 
-      {/* Scene 6: Results / Stats - 24s to 27s */}
-      <Sequence from={720} durationInFrames={90}>
-        <SceneResults />
+      {/* Scene 6: CRM + Bilingual — 34-40s */}
+      <Sequence from={1020} durationInFrames={180}>
+        <SceneCRM />
       </Sequence>
 
-      {/* Scene 7: CTA - 27s to 30s */}
-      <Sequence from={810} durationInFrames={90}>
+      {/* Scene 7: Easy Setup — 40-48s */}
+      <Sequence from={1200} durationInFrames={240}>
+        <SceneSetup />
+      </Sequence>
+
+      {/* Scene 8: CTA — 48-60s */}
+      <Sequence from={1440} durationInFrames={360}>
         <SceneCTA />
       </Sequence>
 
-      {/* Voiceover audio - place voiceover.mp3 in public/ folder */}
+      {/* Voiceover — place voiceover.mp3 in public/ */}
       <VoiceoverAudio />
+
+      {/* Background music — place bgmusic.mp3 in public/ */}
+      <BgMusicAudio />
     </AbsoluteFill>
   );
 };
@@ -54,7 +78,16 @@ export const CrecimosVideo: React.FC = () => {
 const VoiceoverAudio: React.FC = () => {
   try {
     const src = staticFile("voiceover.mp3");
-    return <Audio src={src} />;
+    return <Audio src={src} volume={1} />;
+  } catch {
+    return null;
+  }
+};
+
+const BgMusicAudio: React.FC = () => {
+  try {
+    const src = staticFile("bgmusic.mp3");
+    return <Audio src={src} volume={0.15} />;
   } catch {
     return null;
   }

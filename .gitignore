@@ -4,3 +4,4 @@ out/
 .DS_Store
 *.mp4
 public/voiceover.mp3
+public/bgmusic.mp3

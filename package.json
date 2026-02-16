@@ -6,7 +6,8 @@
     "start": "npx remotion studio",
     "build": "npx remotion render CrecimosVideo out/video.mp4",
     "render": "npx remotion render CrecimosVideo out/video.mp4",
-    "voiceover": "node generate-voiceover.mjs"
+    "voiceover": "node generate-voiceover.mjs",
+    "bgmusic": "node generate-bgmusic.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.242",

@@ -3,35 +3,32 @@ import https from "https";
 import path from "path";
 
 const API_KEY = "sk_55c3c23fc4c94f72691908ea429f8c6c955e6f05fb726f9b";
-const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel - professional female voice
+const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel — professional female voice
 const OUTPUT_FILE = path.join("public", "voiceover.mp3");
 
-const SCRIPT = `Crecimos. Never miss a call again.
+const SCRIPT = `How many calls did your business miss this week? Be honest. Every one of those callers didn't leave a voicemail — they called the next company on Google. And depending on your business, that's anywhere from five hundred to fifteen thousand dollars per missed call. Gone.
 
-Every day, businesses lose thousands of dollars from unanswered calls. Sixty-two percent of calls go unanswered. Eighty-five percent of those callers will never call back.
+Now imagine every single call gets answered — twenty-four seven, nights, weekends, holidays. An AI receptionist that sounds like a real person picks up, answers the caller's questions about your business, collects their info, qualifies whether they're a real lead, routes them to the right team member or transfers the call, books the appointment straight to your calendar or your team's calendars — never double books, never schedules when you're unavailable — and sends reminder notifications to your customers so they actually show up.
 
-Meet Crecimos. Your AI-powered phone assistant that answers every call, books appointments instantly, and keeps your business running twenty-four seven.
+Set it to answer every call, or just the ones you can't get to. Either way, no more losing customers to voicemail.
 
-With twenty-four seven AI answering, smart booking, five-minute setup, and seamless CRM integration, Crecimos has everything you need to grow.
+It comes with its own built-in CRM so every call, every customer, every detail is tracked in one place. Works in English and Spanish. And you don't need to pay anyone to set it up — you can do it yourself in under ten minutes. Or book a consultation and we'll help you set it up.
 
-It's simple. A customer calls. Your AI answers. Appointments are booked and confirmed automatically.
-
-One hundred percent of calls answered. Three times more bookings. Always available.
-
-Start growing today. Set up in five minutes. Try Crecimos free at crecimos.com.`;
+Sign up today at crecimos dot com.`;
 
 const body = JSON.stringify({
   text: SCRIPT,
   model_id: "eleven_turbo_v2_5",
   voice_settings: {
-    stability: 0.6,
+    stability: 0.5,
     similarity_boost: 0.8,
-    style: 0.3,
+    style: 0.4,
     use_speaker_boost: true,
   },
 });
 
-console.log("Generating voiceover with ElevenLabs...");
+console.log("Generating voiceover with ElevenLabs (Rachel voice)...");
+console.log(`Script length: ${SCRIPT.length} characters`);
 
 const options = {
   hostname: "api.elevenlabs.io",
@@ -62,7 +59,9 @@ const req = https.request(options, (res) => {
   file.on("finish", () => {
     file.close();
     const stats = fs.statSync(OUTPUT_FILE);
-    console.log(`Voiceover saved to ${OUTPUT_FILE} (${(stats.size / 1024).toFixed(1)} KB)`);
+    console.log(
+      `Voiceover saved to ${OUTPUT_FILE} (${(stats.size / 1024).toFixed(1)} KB)`,
+    );
   });
 });
 

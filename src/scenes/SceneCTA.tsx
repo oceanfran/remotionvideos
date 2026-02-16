@@ -1,68 +1,183 @@
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { theme } from "../theme";
-import { GlowOrb } from "../components/GlowOrb";
+
+/* ──────────────────────────────────────────────────
+   Scene 8 — The CTA  (48-60 s · 360 frames)
+   crecimos.com types itself, taglines animate in,
+   final "Never miss another call.", fade to black.
+   ────────────────────────────────────────────────── */
 
 export const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const titleOpacity = interpolate(frame, [5, 25], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const titleScale = interpolate(frame, [5, 25], [0.9, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // "Sign up today" fades in
+  const signUpOp = interpolate(frame, [10, 30], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const signUpY = interpolate(frame, [10, 30], [30, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  const subtitleOpacity = interpolate(frame, [20, 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const subtitleY = interpolate(frame, [20, 40], [20, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // URL typing effect
+  const url = "crecimos.com";
+  const typedLength = Math.min(
+    url.length,
+    Math.floor(
+      interpolate(frame, [40, 80], [0, url.length], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      }),
+    ),
+  );
+  const urlOp = interpolate(frame, [35, 45], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  const buttonOpacity = interpolate(frame, [35, 50], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const buttonScale = interpolate(frame, [35, 50], [0.8, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // Cursor blink
+  const cursorOp = frame >= 40 && frame < 120 ? (Math.floor(frame / 8) % 2 === 0 ? 1 : 0) : 0;
 
-  // Pulsing glow on button
-  const pulseScale = interpolate(frame % 30, [0, 15, 30], [1, 1.05, 1], { extrapolateRight: "clamp" });
+  // Subtitle
+  const subOp = interpolate(frame, [100, 120], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const subY = interpolate(frame, [100, 120], [20, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  const urlOpacity = interpolate(frame, [50, 65], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // Final tagline — hold for 4 seconds starting at frame 180
+  const tagOp = interpolate(frame, [180, 200], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const tagScale = interpolate(frame, [180, 200], [0.9, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Fade to black
+  const fadeOut = interpolate(frame, [320, 360], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
-    <AbsoluteFill style={{ background: theme.colors.bgDark, justifyContent: "center", alignItems: "center" }}>
-      <GlowOrb x={50} y={40} size={800} color={theme.colors.primary} delay={0} />
-      <GlowOrb x={30} y={70} size={500} color={theme.colors.accent} delay={10} />
+    <AbsoluteFill style={{ background: theme.colors.bgDark }}>
+      {/* Subtle radial glow */}
+      <div
+        style={{
+          position: "absolute",
+          width: 800,
+          height: 800,
+          left: "50%",
+          top: "40%",
+          transform: "translate(-50%, -50%)",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${theme.colors.primary}15, transparent 70%)`,
+          filter: "blur(60px)",
+        }}
+      />
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 32, zIndex: 1 }}>
-        <div style={{ opacity: titleOpacity, transform: `scale(${titleScale})`, textAlign: "center" }}>
-          <div style={{
-            fontSize: 72,
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          gap: 28,
+          zIndex: 1,
+        }}
+      >
+        {/* Sign up today */}
+        <div
+          style={{
+            opacity: signUpOp,
+            transform: `translateY(${signUpY}px)`,
+            fontSize: 36,
+            fontWeight: 600,
+            color: theme.colors.textSecondary,
+            fontFamily: theme.fonts.heading,
+          }}
+        >
+          Sign up today.
+        </div>
+
+        {/* crecimos.com — typed */}
+        <div
+          style={{
+            opacity: urlOp,
+            fontSize: 88,
             fontWeight: 800,
             fontFamily: theme.fonts.heading,
             background: theme.colors.gradientPrimary,
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            lineHeight: 1.1,
-          }}>
-            Start growing today.
-          </div>
+            letterSpacing: -1,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {url.slice(0, typedLength)}
+          <span
+            style={{
+              display: "inline-block",
+              width: 4,
+              height: 80,
+              background: theme.colors.accent,
+              marginLeft: 4,
+              opacity: cursorOp,
+              borderRadius: 2,
+            }}
+          />
         </div>
 
-        <div style={{ opacity: subtitleOpacity, transform: `translateY(${subtitleY}px)`, fontSize: 28, color: theme.colors.textSecondary, fontFamily: theme.fonts.body, textAlign: "center" }}>
-          Set up in 5 minutes. Start your free trial now.
+        {/* Subtitle */}
+        <div
+          style={{
+            opacity: subOp,
+            transform: `translateY(${subY}px)`,
+            fontSize: 28,
+            color: theme.colors.textSecondary,
+            fontFamily: theme.fonts.body,
+            textAlign: "center",
+          }}
+        >
+          Your AI receptionist is 10 minutes away.
         </div>
 
-        <div style={{ opacity: buttonOpacity, transform: `scale(${buttonScale * pulseScale})`, marginTop: 16 }}>
-          <div style={{
-            padding: "22px 64px",
-            background: theme.colors.gradientPrimary,
-            borderRadius: 16,
-            fontSize: 26,
-            fontWeight: 700,
-            color: "white",
+        {/* Final tagline */}
+        <div
+          style={{
+            opacity: tagOp,
+            transform: `scale(${tagScale})`,
+            marginTop: 40,
+            fontSize: 48,
+            fontWeight: 800,
+            color: theme.colors.textPrimary,
             fontFamily: theme.fonts.heading,
-            boxShadow: `0 0 40px ${theme.colors.primary}50`,
-          }}>
-            Try Crecimos Free →
-          </div>
-        </div>
-
-        <div style={{ opacity: urlOpacity, fontSize: 22, color: theme.colors.textMuted, fontFamily: theme.fonts.body, marginTop: 8 }}>
-          crecimos.com
+            textAlign: "center",
+          }}
+        >
+          Never miss another call.
         </div>
       </div>
+
+      {/* Fade to black overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "black",
+          opacity: fadeOut,
+          zIndex: 10,
+        }}
+      />
     </AbsoluteFill>
   );
 };

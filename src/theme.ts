@@ -1,40 +1,31 @@
-// Crecimos brand-inspired color palette
-// Deep dark backgrounds with vibrant blue/cyan accents
-// Clean, modern SaaS aesthetic
+// Crecimos brand palette — flat, clean, bold
 export const theme = {
   colors: {
-    // Primary brand colors
-    primary: "#4F46E5", // Indigo
+    primary: "#4F46E5",
     primaryLight: "#818CF8",
-    primaryGlow: "#6366F1",
-    accent: "#06B6D4", // Cyan accent
+    accent: "#06B6D4",
     accentLight: "#22D3EE",
 
-    // Backgrounds
-    bgDark: "#0A0A0F",
-    bgCard: "#12121A",
-    bgCardHover: "#1A1A2E",
-    bgGradientStart: "#0A0A0F",
-    bgGradientEnd: "#0F0F1A",
+    bgDark: "#0F1117",
+    bgMid: "#161822",
+    bgCard: "#1C1F2E",
 
-    // Text
     textPrimary: "#FFFFFF",
-    textSecondary: "#A1A1AA",
-    textMuted: "#71717A",
+    textSecondary: "#94A3B8",
+    textMuted: "#64748B",
 
-    // Accents
     success: "#10B981",
     warning: "#F59E0B",
     danger: "#EF4444",
+    dangerLight: "#F87171",
 
-    // Gradients
     gradientPrimary: "linear-gradient(135deg, #4F46E5, #06B6D4)",
-    gradientGlow: "linear-gradient(135deg, #6366F1, #22D3EE)",
-    gradientSubtle: "linear-gradient(180deg, #12121A, #0A0A0F)",
+    gradientWarm: "linear-gradient(135deg, #F59E0B, #EF4444)",
   },
   fonts: {
-    heading: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
+    heading:
+      '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
     body: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
-    mono: '"SF Mono", "Fira Code", "Consolas", monospace',
+    mono: '"SF Mono", "Fira Code", Consolas, monospace',
   },
 };
