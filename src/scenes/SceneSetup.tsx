@@ -27,10 +27,12 @@ export const SceneSetup: React.FC = () => {
   });
   const titleY = interpolate(titleSpring, [0, 1], [50, 0]);
 
-  const step1 = spring({ frame: frame - 20, fps, config: { damping: 12, stiffness: 90 } });
-  const step2 = spring({ frame: frame - 35, fps, config: { damping: 12, stiffness: 90 } });
-  const step3 = spring({ frame: frame - 50, fps, config: { damping: 12, stiffness: 90 } });
-  const step4 = spring({ frame: frame - 65, fps, config: { damping: 12, stiffness: 90 } });
+  const step1 = spring({ frame: frame - 15, fps, config: { damping: 12, stiffness: 90 } });
+  const step2 = spring({ frame: frame - 27, fps, config: { damping: 12, stiffness: 90 } });
+  const step3 = spring({ frame: frame - 39, fps, config: { damping: 12, stiffness: 90 } });
+  const step4 = spring({ frame: frame - 51, fps, config: { damping: 12, stiffness: 90 } });
+  const step5 = spring({ frame: frame - 63, fps, config: { damping: 12, stiffness: 90 } });
+  const step6 = spring({ frame: frame - 75, fps, config: { damping: 12, stiffness: 90 } });
 
   // "Under 10 minutes" — big number reveal
   const numberSpring = spring({
@@ -48,16 +50,18 @@ export const SceneSetup: React.FC = () => {
   });
   const consultY = interpolate(consultSpring, [0, 1], [30, 0]);
 
-  const exitOp = interpolate(frame, [185, 210], [1, 0], {
+  const exitOp = interpolate(frame, [125, 150], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   const steps = [
-    { label: "Connect your number", op: step1 },
+    { label: "Connect your number or we'll give you one", op: step1 },
     { label: "Customize your greeting", op: step2 },
-    { label: "Set your hours", op: step3 },
-    { label: "Go live", op: step4 },
+    { label: "Add your business info", op: step3 },
+    { label: "Connect your calendar", op: step4 },
+    { label: "Set your hours", op: step5 },
+    { label: "Go live", op: step6 },
   ];
 
   return (
@@ -113,7 +117,7 @@ export const SceneSetup: React.FC = () => {
           width: 840,
           display: "flex",
           flexDirection: "column",
-          gap: 18,
+          gap: 12,
           zIndex: 1,
         }}
       >
@@ -129,7 +133,7 @@ export const SceneSetup: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 24,
-                padding: "26px 36px",
+                padding: "20px 32px",
                 background: isComplete
                   ? `${theme.colors.success}08`
                   : theme.colors.bgCard,
@@ -180,7 +184,7 @@ export const SceneSetup: React.FC = () => {
               </div>
               <div
                 style={{
-                  fontSize: 32,
+                  fontSize: 28,
                   fontWeight: 600,
                   color: theme.colors.text,
                   fontFamily: theme.fonts.body,
