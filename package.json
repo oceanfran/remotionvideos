@@ -1,0 +1,22 @@
+{
+  "name": "crecimos-video",
+  "version": "1.0.0",
+  "description": "Crecimos promotional animation video",
+  "scripts": {
+    "start": "npx remotion studio",
+    "build": "npx remotion render CrecimosVideo out/video.mp4",
+    "render": "npx remotion render CrecimosVideo out/video.mp4",
+    "voiceover": "node generate-voiceover.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.242",
+    "remotion": "4.0.242",
+    "@remotion/player": "4.0.242",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/react": "^18.3.3"
+  }
+}
