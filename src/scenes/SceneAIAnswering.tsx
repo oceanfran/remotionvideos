@@ -8,43 +8,60 @@ import {
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
-   Scene 3 — The AI Answering  (12-24 s · 360 frames)
-   Big title springs in, waveform animates, features
-   list in vertically. Apple keynote: clean depth.
+   Scene 3 — AI Answering  (14-29s · 450 frames)
+   "Now imagine every single call gets answered — 24/7.
+   AI receptionist picks up, answers questions, collects
+   info, qualifies leads, transfers, books, sends reminders."
+
+   Blue gradient bg, big title, animated waveform,
+   feature cards animate in with stagger.
    ────────────────────────────────────────────────── */
 
-const FeatureRow: React.FC<{
-  icon: React.ReactNode;
+const FeatureCard: React.FC<{
+  icon: string;
   label: string;
   delay: number;
-}> = ({ icon, label, delay }) => {
+  index: number;
+}> = ({ icon, label, delay, index }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const s = spring({ frame: frame - delay, fps, config: { damping: 14, stiffness: 100 } });
-  const x = interpolate(s, [0, 1], [60, 0]);
+  const s = spring({
+    frame: frame - delay,
+    fps,
+    config: { damping: 12, stiffness: 90 },
+  });
+  const y = interpolate(s, [0, 1], [50, 0]);
+
+  // Subtle float after entering
+  const float =
+    frame > delay + 20 ? Math.sin((frame - delay + index * 10) * 0.05) * 3 : 0;
 
   return (
     <div
       style={{
         opacity: s,
-        transform: `translateX(${x}px)`,
+        transform: `translateY(${y + float}px)`,
+        background: "rgba(255,255,255,0.12)",
+        backdropFilter: "blur(20px)",
+        borderRadius: theme.radius.lg,
+        padding: "28px 36px",
         display: "flex",
         alignItems: "center",
         gap: 24,
-        padding: "20px 0",
+        border: "1px solid rgba(255,255,255,0.15)",
       }}
     >
       <div
         style={{
-          width: 64,
-          height: 64,
-          borderRadius: 16,
-          background: `${theme.colors.accent}12`,
-          border: `1.5px solid ${theme.colors.accent}30`,
+          width: 56,
+          height: 56,
+          borderRadius: theme.radius.md,
+          background: "rgba(255,255,255,0.2)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          fontSize: 28,
           flexShrink: 0,
         }}
       >
@@ -52,10 +69,11 @@ const FeatureRow: React.FC<{
       </div>
       <div
         style={{
-          fontSize: 32,
+          fontSize: 34,
           fontWeight: 600,
-          color: theme.colors.text,
+          color: "white",
           fontFamily: theme.fonts.body,
+          letterSpacing: "-0.01em",
         }}
       >
         {label}
@@ -64,50 +82,83 @@ const FeatureRow: React.FC<{
   );
 };
 
-const FeatureIcon: React.FC<{ d: string }> = ({ d }) => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-    <path d={d} stroke={theme.colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 export const SceneAIAnswering: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const titleSpring = spring({ frame: frame - 5, fps, config: { damping: 14, stiffness: 80 } });
-  const titleY = interpolate(titleSpring, [0, 1], [50, 0]);
+  const titleSpring = spring({
+    frame: frame - 5,
+    fps,
+    config: { damping: 14, stiffness: 70 },
+  });
+  const titleY = interpolate(titleSpring, [0, 1], [60, 0]);
 
-  const waveOp = interpolate(frame, [20, 40], [0, 1], {
+  const waveOp = interpolate(frame, [20, 45], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const exitOp = interpolate(frame, [335, 360], [1, 0], {
+  const exitOp = interpolate(frame, [420, 450], [1, 0], {
     extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Animated gradient shift
+  const gradientShift = interpolate(frame, [0, 450], [0, 30], {
     extrapolateRight: "clamp",
   });
 
   const features = [
-    { icon: <FeatureIcon d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />, label: "Answers questions", delay: 80 },
-    { icon: <FeatureIcon d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />, label: "Collects info", delay: 120 },
-    { icon: <FeatureIcon d="M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3" />, label: "Qualifies leads", delay: 160 },
-    { icon: <FeatureIcon d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />, label: "Routes & transfers", delay: 200 },
-    { icon: <FeatureIcon d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />, label: "Books appointments", delay: 240 },
+    { icon: "💬", label: "Answers questions", delay: 90 },
+    { icon: "📋", label: "Collects info", delay: 120 },
+    { icon: "✅", label: "Qualifies leads", delay: 150 },
+    { icon: "🔀", label: "Transfers calls", delay: 180 },
+    { icon: "📅", label: "Books to your calendar", delay: 210 },
+    { icon: "🔔", label: "Sends reminders", delay: 240 },
   ];
 
   return (
     <AbsoluteFill
       style={{
-        background: theme.colors.bg,
+        background: `linear-gradient(${170 + gradientShift}deg,
+          hsl(215, 100%, 58%) 0%,
+          hsl(210, 100%, 44%) 40%,
+          hsl(220, 90%, 35%) 100%)`,
         alignItems: "center",
         opacity: exitOp,
       }}
     >
+      {/* Ambient glow orbs */}
+      <div
+        style={{
+          position: "absolute",
+          width: 600,
+          height: 600,
+          top: 100,
+          left: -100,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)",
+          filter: "blur(60px)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: 500,
+          height: 500,
+          bottom: 200,
+          right: -100,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(90,200,250,0.12), transparent 70%)",
+          filter: "blur(60px)",
+        }}
+      />
+
       {/* Label */}
       <div
         style={{
           position: "absolute",
-          top: 200,
+          top: 180,
           opacity: titleSpring,
           transform: `translateY(${titleY}px)`,
           textAlign: "center",
@@ -115,28 +166,25 @@ export const SceneAIAnswering: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 24,
-            fontWeight: 500,
-            color: theme.colors.accent,
+            fontSize: 28,
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.7)",
             fontFamily: theme.fonts.body,
-            letterSpacing: 4,
+            letterSpacing: "0.15em",
             textTransform: "uppercase",
-            marginBottom: 20,
+            marginBottom: 24,
           }}
         >
           Now imagine
         </div>
         <div
           style={{
-            fontSize: 68,
+            fontSize: 76,
             fontWeight: 800,
+            color: "white",
             fontFamily: theme.fonts.display,
-            background: theme.colors.gradientAccent,
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            lineHeight: 1.1,
-            letterSpacing: -1,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
           }}
         >
           Every call
@@ -149,9 +197,9 @@ export const SceneAIAnswering: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 600,
+          top: 530,
           display: "flex",
-          gap: 6,
+          gap: 5,
           alignItems: "center",
           opacity: waveOp,
         }}
@@ -160,20 +208,20 @@ export const SceneAIAnswering: React.FC = () => {
           const h = interpolate(
             (frame + i * 3) % 36,
             [0, 18, 36],
-            [12, 60, 12],
+            [8, 50, 8],
             { extrapolateRight: "clamp" },
           );
-          const barOp = interpolate(Math.abs(i - 20), [0, 20], [1, 0.3], {
+          const barOp = interpolate(Math.abs(i - 20), [0, 20], [1, 0.25], {
             extrapolateRight: "clamp",
           });
           return (
             <div
               key={i}
               style={{
-                width: 8,
+                width: 7,
                 height: h,
                 borderRadius: 4,
-                background: theme.colors.accent,
+                background: "white",
                 opacity: barOp,
               }}
             />
@@ -181,59 +229,37 @@ export const SceneAIAnswering: React.FC = () => {
         })}
       </div>
 
-      {/* Active label */}
+      {/* "24/7" label */}
       <div
         style={{
           position: "absolute",
-          top: 690,
+          top: 600,
           opacity: waveOp,
-          fontSize: 22,
-          fontWeight: 500,
-          color: theme.colors.textSecondary,
+          fontSize: 24,
+          fontWeight: 600,
+          color: "rgba(255,255,255,0.6)",
           fontFamily: theme.fonts.body,
-          letterSpacing: 2,
+          letterSpacing: "0.15em",
         }}
       >
         AI RECEPTIONIST — 24/7
       </div>
 
-      {/* Feature list */}
+      {/* Feature cards */}
       <div
         style={{
           position: "absolute",
-          top: 800,
-          left: 100,
-          right: 100,
+          top: 690,
+          left: 60,
+          right: 60,
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
         }}
       >
         {features.map((f, i) => (
-          <FeatureRow key={i} {...f} />
+          <FeatureCard key={i} {...f} index={i} />
         ))}
-      </div>
-
-      {/* Progress dots */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 200,
-          display: "flex",
-          gap: 14,
-        }}
-      >
-        {features.map((f, i) => {
-          const active = frame >= f.delay + 15;
-          return (
-            <div
-              key={i}
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: active ? theme.colors.accent : theme.colors.textTertiary,
-              }}
-            />
-          );
-        })}
       </div>
     </AbsoluteFill>
   );

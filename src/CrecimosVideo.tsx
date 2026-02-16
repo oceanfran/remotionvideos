@@ -2,74 +2,69 @@ import { AbsoluteFill, Audio, Loop, Sequence, staticFile } from "remotion";
 import { SceneHook } from "./scenes/SceneIntro";
 import { SceneCost } from "./scenes/SceneCost";
 import { SceneAIAnswering } from "./scenes/SceneAIAnswering";
-import { SceneNoDoubleBook } from "./scenes/SceneNoDoubleBook";
 import { SceneFlexibility } from "./scenes/SceneFlexibility";
 import { SceneCRM } from "./scenes/SceneCRM";
 import { SceneSetup } from "./scenes/SceneSetup";
 import { SceneCTA } from "./scenes/SceneCTA";
 
 /*
-  60-second video · 30 fps · 1800 frames · 1080×1920 (9:16 vertical)
+  56-second video · 30 fps · 1680 frames · 1080×1920 (9:16 vertical)
 
-  Scene                  Seconds   Frames
-  ─────────────────────  ────────  ──────
-  1. The Hook            0–6       0–180
-  2. The Cost            6–12      180–360
-  3. AI Answering        12–24     360–720
-  4. No Double Booking   24–28     720–840
-  5. Flexibility         28–34     840–1020
-  6. CRM + Bilingual     34–40     1020–1200
-  7. Easy Setup          40–48     1200–1440
-  8. CTA                 48–60     1440–1800
+  Synced to new shortened script at 1.15x speed:
+
+  Scene                  Seconds   Frames    Script segment
+  ─────────────────────  ────────  ──────    ──────────────
+  1. The Hook            0–5       0–150     "How many calls... Be honest."
+  2. The Cost            5–14      150–420   "Every one of those callers... Gone."
+  3. AI Answering        14–29     420–870   "Now imagine... actually show up."
+  4. Flexibility         29–35     870–1050  "Set it to answer... to voicemail."
+  5. CRM + Bilingual     35–42     1050–1260 "Built-in CRM... English and Spanish."
+  6. Easy Setup          42–49     1260–1470 "Under 10 minutes... set it up."
+  7. CTA                 49–56     1470–1680 "Sign up today at Crecimos.com."
 */
 
 export const CrecimosVideo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ backgroundColor: "#000000" }}>
-      {/* Scene 1: The Hook — 0-6s */}
-      <Sequence from={0} durationInFrames={180}>
+    <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
+      {/* Scene 1: The Hook — 0-5s */}
+      <Sequence from={0} durationInFrames={150}>
         <SceneHook />
       </Sequence>
 
-      {/* Scene 2: The Cost — 6-12s */}
-      <Sequence from={180} durationInFrames={180}>
+      {/* Scene 2: The Cost — 5-14s */}
+      <Sequence from={150} durationInFrames={270}>
         <SceneCost />
       </Sequence>
 
-      {/* Scene 3: AI Answering — 12-24s */}
-      <Sequence from={360} durationInFrames={360}>
+      {/* Scene 3: AI Answering — 14-29s */}
+      <Sequence from={420} durationInFrames={450}>
         <SceneAIAnswering />
       </Sequence>
 
-      {/* Scene 4: No Double Booking — 24-28s */}
-      <Sequence from={720} durationInFrames={120}>
-        <SceneNoDoubleBook />
-      </Sequence>
-
-      {/* Scene 5: Flexibility — 28-34s */}
-      <Sequence from={840} durationInFrames={180}>
+      {/* Scene 4: Flexibility — 29-35s */}
+      <Sequence from={870} durationInFrames={180}>
         <SceneFlexibility />
       </Sequence>
 
-      {/* Scene 6: CRM + Bilingual — 34-40s */}
-      <Sequence from={1020} durationInFrames={180}>
+      {/* Scene 5: CRM + Bilingual — 35-42s */}
+      <Sequence from={1050} durationInFrames={210}>
         <SceneCRM />
       </Sequence>
 
-      {/* Scene 7: Easy Setup — 40-48s */}
-      <Sequence from={1200} durationInFrames={240}>
+      {/* Scene 6: Easy Setup — 42-49s */}
+      <Sequence from={1260} durationInFrames={210}>
         <SceneSetup />
       </Sequence>
 
-      {/* Scene 8: CTA — 48-60s */}
-      <Sequence from={1440} durationInFrames={360}>
+      {/* Scene 7: CTA — 49-56s */}
+      <Sequence from={1470} durationInFrames={210}>
         <SceneCTA />
       </Sequence>
 
-      {/* Voiceover — full volume */}
+      {/* Voiceover */}
       <VoiceoverAudio />
 
-      {/* Background music — loops 30s track across full 60s */}
+      {/* Background music */}
       <BgMusicAudio />
     </AbsoluteFill>
   );

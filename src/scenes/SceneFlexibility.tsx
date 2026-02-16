@@ -8,28 +8,45 @@ import {
 import { theme } from "../theme";
 
 /* ──────────────────────────────────────────────────
-   Scene 5 — Flexibility  (28-34 s · 180 frames)
-   Two stacked cards: "Answer Every Call" and "Overflow".
-   Apple keynote: spring cards, depth, clean type.
+   Scene 4 — Flexibility  (29-35s · 180 frames)
+   "Set it to answer every call, or just the ones you
+   can't get to. No more losing customers to voicemail."
+
+   Two option cards on white bg, then tagline.
    ────────────────────────────────────────────────── */
 
 export const SceneFlexibility: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const titleSpring = spring({ frame, fps, config: { damping: 14, stiffness: 80 } });
-  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
+  const titleSpring = spring({
+    frame,
+    fps,
+    config: { damping: 14, stiffness: 70 },
+  });
+  const titleY = interpolate(titleSpring, [0, 1], [50, 0]);
 
-  const card1Spring = spring({ frame: frame - 15, fps, config: { damping: 14, stiffness: 100 } });
+  const card1Spring = spring({
+    frame: frame - 15,
+    fps,
+    config: { damping: 12, stiffness: 90 },
+  });
   const card1Y = interpolate(card1Spring, [0, 1], [80, 0]);
 
-  const card2Spring = spring({ frame: frame - 35, fps, config: { damping: 14, stiffness: 100 } });
+  const card2Spring = spring({
+    frame: frame - 30,
+    fps,
+    config: { damping: 12, stiffness: 90 },
+  });
   const card2Y = interpolate(card2Spring, [0, 1], [80, 0]);
 
-  const subtitleSpring = spring({ frame: frame - 60, fps, config: { damping: 15 } });
+  const subtitleSpring = spring({
+    frame: frame - 60,
+    fps,
+    config: { damping: 14 },
+  });
   const subtitleY = interpolate(subtitleSpring, [0, 1], [30, 0]);
 
-  // Clock rotation
   const clockRotation = (frame * 4) % 360;
 
   const exitOp = interpolate(frame, [155, 180], [1, 0], {
@@ -45,6 +62,17 @@ export const SceneFlexibility: React.FC = () => {
         opacity: exitOp,
       }}
     >
+      {/* Subtle bg */}
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          background:
+            "radial-gradient(ellipse at 50% 50%, hsl(210, 95%, 96%) 0%, transparent 50%)",
+        }}
+      />
+
       {/* Title */}
       <div
         style={{
@@ -54,16 +82,17 @@ export const SceneFlexibility: React.FC = () => {
           transform: `translateY(${titleY}px)`,
           textAlign: "center",
           padding: "0 60px",
+          zIndex: 1,
         }}
       >
         <div
           style={{
-            fontSize: 60,
-            fontWeight: 700,
+            fontSize: 68,
+            fontWeight: 800,
             color: theme.colors.text,
             fontFamily: theme.fonts.display,
-            lineHeight: 1.2,
-            letterSpacing: -1,
+            lineHeight: 1.1,
+            letterSpacing: "-0.03em",
           }}
         >
           Your choice.
@@ -77,14 +106,16 @@ export const SceneFlexibility: React.FC = () => {
           top: 480,
           opacity: card1Spring,
           transform: `translateY(${card1Y}px)`,
-          width: 860,
+          width: 900,
           background: theme.colors.bgCard,
-          borderRadius: 28,
-          padding: "48px 56px",
-          border: `1.5px solid ${theme.colors.accent}25`,
+          borderRadius: theme.radius.xl,
+          padding: "48px 52px",
+          border: `2px solid ${theme.colors.primary}20`,
           display: "flex",
           alignItems: "center",
-          gap: 40,
+          gap: 36,
+          boxShadow: theme.shadows.cardLg,
+          zIndex: 1,
         }}
       >
         {/* Spinning clock */}
@@ -93,7 +124,8 @@ export const SceneFlexibility: React.FC = () => {
             width: 100,
             height: 100,
             borderRadius: "50%",
-            border: `3px solid ${theme.colors.accent}`,
+            background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.primaryLight}15)`,
+            border: `3px solid ${theme.colors.primary}`,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -105,8 +137,8 @@ export const SceneFlexibility: React.FC = () => {
             style={{
               position: "absolute",
               width: 3,
-              height: 32,
-              background: theme.colors.accent,
+              height: 30,
+              background: theme.colors.primary,
               borderRadius: 2,
               transformOrigin: "bottom center",
               transform: `rotate(${clockRotation}deg)`,
@@ -118,7 +150,7 @@ export const SceneFlexibility: React.FC = () => {
               width: 8,
               height: 8,
               borderRadius: "50%",
-              background: theme.colors.accent,
+              background: theme.colors.primary,
             }}
           />
         </div>
@@ -126,17 +158,21 @@ export const SceneFlexibility: React.FC = () => {
         <div>
           <div
             style={{
-              fontSize: 40,
+              fontSize: 42,
               fontWeight: 700,
-              color: theme.colors.accent,
               fontFamily: theme.fonts.display,
+              letterSpacing: "-0.02em",
+              background: theme.colors.gradientText,
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
             Answer Every Call
           </div>
           <div
             style={{
-              fontSize: 26,
+              fontSize: 28,
               color: theme.colors.textSecondary,
               fontFamily: theme.fonts.body,
               marginTop: 8,
@@ -154,14 +190,16 @@ export const SceneFlexibility: React.FC = () => {
           top: 740,
           opacity: card2Spring,
           transform: `translateY(${card2Y}px)`,
-          width: 860,
+          width: 900,
           background: theme.colors.bgCard,
-          borderRadius: 28,
-          padding: "48px 56px",
-          border: `1.5px solid ${theme.colors.textTertiary}30`,
+          borderRadius: theme.radius.xl,
+          padding: "48px 52px",
+          border: `1px solid ${theme.colors.border}`,
           display: "flex",
           alignItems: "center",
-          gap: 40,
+          gap: 36,
+          boxShadow: theme.shadows.card,
+          zIndex: 1,
         }}
       >
         {/* Phone icon */}
@@ -170,7 +208,8 @@ export const SceneFlexibility: React.FC = () => {
             width: 100,
             height: 100,
             borderRadius: "50%",
-            border: `3px solid ${theme.colors.textSecondary}`,
+            background: theme.colors.bgSubtle,
+            border: `2px solid ${theme.colors.border}`,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -191,17 +230,18 @@ export const SceneFlexibility: React.FC = () => {
         <div>
           <div
             style={{
-              fontSize: 40,
+              fontSize: 42,
               fontWeight: 700,
               color: theme.colors.text,
               fontFamily: theme.fonts.display,
+              letterSpacing: "-0.02em",
             }}
           >
             Overflow Only
           </div>
           <div
             style={{
-              fontSize: 26,
+              fontSize: 28,
               color: theme.colors.textSecondary,
               fontFamily: theme.fonts.body,
               marginTop: 8,
@@ -212,29 +252,31 @@ export const SceneFlexibility: React.FC = () => {
         </div>
       </div>
 
-      {/* Subtitle */}
+      {/* Tagline */}
       <div
         style={{
           position: "absolute",
-          bottom: 400,
+          bottom: 360,
           opacity: subtitleSpring,
           transform: `translateY(${subtitleY}px)`,
           textAlign: "center",
           padding: "0 80px",
+          zIndex: 1,
         }}
       >
         <div
           style={{
-            fontSize: 36,
-            fontWeight: 600,
-            color: theme.colors.textSecondary,
+            fontSize: 40,
+            fontWeight: 700,
+            color: theme.colors.text,
             fontFamily: theme.fonts.display,
-            lineHeight: 1.4,
+            lineHeight: 1.3,
+            letterSpacing: "-0.02em",
           }}
         >
           No more losing customers
           <br />
-          to voicemail.
+          <span style={{ color: theme.colors.primary }}>to voicemail.</span>
         </div>
       </div>
     </AbsoluteFill>
