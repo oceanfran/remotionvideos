@@ -244,7 +244,7 @@ export const SceneCRM: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 780,
+          top: 870,
           opacity: overviewSpring,
           transform: `translateY(${overviewY}px)`,
           textAlign: "center",
@@ -252,20 +252,6 @@ export const SceneCRM: React.FC = () => {
           zIndex: 1,
         }}
       >
-        {/* Section title */}
-        <div
-          style={{
-            fontSize: 26,
-            fontWeight: 700,
-            color: theme.colors.text,
-            fontFamily: theme.fonts.display,
-            marginBottom: 20,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Analytics, CRM, team management & AI insights
-        </div>
-
         {/* Main overview card */}
         <div
           style={{
@@ -571,7 +557,7 @@ export const SceneCRM: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 180,
+          bottom: 60,
           opacity: bilingualSpring,
           transform: `translateY(${bilingualY}px)`,
           textAlign: "center",
