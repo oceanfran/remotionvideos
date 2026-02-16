@@ -44,13 +44,13 @@ export const SceneSetup: React.FC = () => {
 
   // Consultation CTA
   const consultSpring = spring({
-    frame: frame - 130,
+    frame: frame - 95,
     fps,
     config: { damping: 14 },
   });
   const consultY = interpolate(consultSpring, [0, 1], [30, 0]);
 
-  const exitOp = interpolate(frame, [125, 150], [1, 0], {
+  const exitOp = interpolate(frame, [138, 150], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -202,7 +202,7 @@ export const SceneSetup: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 1060,
+          top: 1180,
           opacity: numberSpring,
           transform: `scale(${numberScale})`,
           textAlign: "center",
@@ -241,7 +241,7 @@ export const SceneSetup: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 240,
+          bottom: 340,
           opacity: consultSpring,
           transform: `translateY(${consultY}px)`,
           zIndex: 1,

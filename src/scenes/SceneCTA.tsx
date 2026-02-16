@@ -62,7 +62,7 @@ const CrecimosLogo: React.FC<{ frame: number; fps: number }> = ({
                 width: 14,
                 height: h,
                 borderRadius: 7,
-                background: "linear-gradient(180deg, #3B82F6, #06B6D4)",
+                background: "linear-gradient(180deg, #FFFFFF, #7DD3FC)",
               }}
             />
           );
@@ -76,7 +76,7 @@ const CrecimosLogo: React.FC<{ frame: number; fps: number }> = ({
           fontWeight: 800,
           fontFamily: theme.fonts.display,
           letterSpacing: "-0.03em",
-          background: "linear-gradient(135deg, #3B82F6, #06B6D4)",
+          background: "linear-gradient(135deg, #FFFFFF, #93C5FD)",
           backgroundClip: "text",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
