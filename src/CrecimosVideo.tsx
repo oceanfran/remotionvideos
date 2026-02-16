@@ -87,7 +87,14 @@ const VoiceoverAudio: React.FC = () => {
 const BgMusicAudio: React.FC = () => {
   try {
     const src = staticFile("bgmusic.mp3");
-    return <Audio src={src} volume={0.15} />;
+    return (
+      <>
+        <Audio src={src} volume={0.15} />
+        <Sequence from={900}>
+          <Audio src={src} volume={0.15} />
+        </Sequence>
+      </>
+    );
   } catch {
     return null;
   }

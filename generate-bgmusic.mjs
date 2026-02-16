@@ -7,8 +7,8 @@ const OUTPUT_FILE = path.join("public", "bgmusic.mp3");
 
 // ElevenLabs Sound Effects API — generate upbeat background music
 const body = JSON.stringify({
-  text: "Upbeat modern corporate background music, energetic and positive, electronic synth pads with a driving beat, suitable for a tech product advertisement, 60 seconds, no vocals",
-  duration_seconds: 60,
+  text: "Upbeat modern corporate background music, energetic and positive, electronic synth pads with a driving beat, suitable for a tech product advertisement, loopable, no vocals",
+  duration_seconds: 30,
   prompt_influence: 0.5,
 });
 
