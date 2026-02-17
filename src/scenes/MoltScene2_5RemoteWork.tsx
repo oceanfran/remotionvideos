@@ -569,8 +569,8 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
             top: "55%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 500,
-            height: 300,
+            width: 700,
+            height: 420,
           }}
         >
           {/* Void/gap in center */}
@@ -580,8 +580,8 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
               left: "50%",
               top: "50%",
               transform: "translate(-50%, -50%)",
-              width: 180,
-              height: 180,
+              width: 260,
+              height: 260,
               borderRadius: "50%",
               border: `2px dashed rgba(239,68,68,0.25)`,
               opacity:
@@ -600,7 +600,7 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
               left: "50%",
               top: "50%",
               transform: "translate(-50%, -50%)",
-              fontSize: 48,
+              fontSize: 64,
               fontWeight: 800,
               color: molt.colors.red,
               opacity:
@@ -615,6 +615,75 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
           >
             ?
           </div>
+
+          {/* Broken connection lines — full container SVG overlay */}
+          <svg
+            width={700}
+            height={420}
+            style={{ position: "absolute", inset: 0, overflow: "visible" }}
+          >
+            {aiAgents.map((agent, i) => {
+              const aSpring = spring({
+                frame: Math.max(0, frame - agent.delay),
+                fps,
+                config: { damping: 24, stiffness: 140 },
+              });
+              // Agent position in container pixels
+              const ax = (agent.x / 100) * 700;
+              const ay = (agent.y / 100) * 420;
+              // Void center
+              const cx = 350;
+              const cy = 210;
+              // Line stops at 60% of the way to center (broken)
+              const endX = ax + (cx - ax) * 0.6;
+              const endY = ay + (cy - ay) * 0.6;
+
+              return (
+                <g key={`line-${i}`}>
+                  <line
+                    x1={ax}
+                    y1={ay}
+                    x2={endX}
+                    y2={endY}
+                    stroke={molt.colors.red}
+                    strokeWidth={1.5}
+                    strokeDasharray="4 6"
+                    opacity={0.4 * aSpring}
+                  />
+                  {/* Error spark at break point */}
+                  <circle
+                    cx={endX}
+                    cy={endY}
+                    r={4}
+                    fill={molt.colors.red}
+                    opacity={
+                      interpolate(
+                        Math.sin(frame * 0.15 + i * 1.5),
+                        [-1, 1],
+                        [0.2, 0.7]
+                      ) * aSpring
+                    }
+                  />
+                  {/* Outer ring flicker */}
+                  <circle
+                    cx={endX}
+                    cy={endY}
+                    r={8}
+                    fill="none"
+                    stroke={molt.colors.red}
+                    strokeWidth={1}
+                    opacity={
+                      interpolate(
+                        Math.sin(frame * 0.12 + i * 2),
+                        [-1, 1],
+                        [0.05, 0.3]
+                      ) * aSpring
+                    }
+                  />
+                </g>
+              );
+            })}
+          </svg>
 
           {/* AI agents floating around disconnected */}
           {aiAgents.map((agent, i) => {
@@ -634,29 +703,29 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
                   left: `${agent.x}%`,
                   top: `${agent.y}%`,
                   transform: `translate(-50%, -50%) translateY(${drift}px)`,
-                  opacity: aSpring * 0.7,
+                  opacity: aSpring * 0.8,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 8,
                 }}
               >
                 {/* Robot icon */}
                 <div
                   style={{
-                    width: 44,
-                    height: 44,
+                    width: 64,
+                    height: 64,
                     borderRadius: "50%",
-                    background: "rgba(212,168,67,0.08)",
-                    border: "1px solid rgba(212,168,67,0.2)",
+                    background: "rgba(212,168,67,0.1)",
+                    border: "1.5px solid rgba(212,168,67,0.25)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
                   <svg
-                    width="20"
-                    height="20"
+                    width="28"
+                    height="28"
                     viewBox="0 0 24 24"
                     fill="none"
                   >
@@ -691,50 +760,14 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
                 </div>
                 <span
                   style={{
-                    fontSize: 11,
+                    fontSize: 14,
+                    fontWeight: 500,
                     color: molt.colors.textMuted,
                     fontFamily: molt.fonts.mono,
                   }}
                 >
                   AI Agent
                 </span>
-
-                {/* Broken connection line toward center */}
-                <svg
-                  style={{
-                    position: "absolute",
-                    width: 100,
-                    height: 60,
-                    left: agent.x < 50 ? 30 : -80,
-                    top: 10,
-                    overflow: "visible",
-                  }}
-                >
-                  <line
-                    x1={agent.x < 50 ? 0 : 100}
-                    y1={20}
-                    x2={agent.x < 50 ? 60 : 40}
-                    y2={20}
-                    stroke={molt.colors.red}
-                    strokeWidth={1}
-                    strokeDasharray="3 5"
-                    opacity={0.3 * aSpring}
-                  />
-                  {/* Error spark */}
-                  <circle
-                    cx={agent.x < 50 ? 60 : 40}
-                    cy={20}
-                    r={3}
-                    fill={molt.colors.red}
-                    opacity={
-                      interpolate(
-                        Math.sin(frame * 0.15 + i * 1.5),
-                        [-1, 1],
-                        [0.2, 0.7]
-                      ) * aSpring
-                    }
-                  />
-                </svg>
               </div>
             );
           })}

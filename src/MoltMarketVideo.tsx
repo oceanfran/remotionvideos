@@ -36,7 +36,7 @@ const BgMusicAudio: React.FC = () => {
     const src = staticFile("molt-bgmusic.mp3");
     return (
       <Loop durationInFrames={900}>
-        <Audio src={src} volume={0.1} />
+        <Audio src={src} volume={0.2} />
       </Loop>
     );
   } catch {

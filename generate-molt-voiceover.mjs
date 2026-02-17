@@ -5,6 +5,7 @@ import path from "path";
 const API_KEY = "sk_55c3c23fc4c94f72691908ea429f8c6c955e6f05fb726f9b";
 const VOICE_ID = "A9evEp8yGjv4c3WsIKuY"; // Ralf Eisend — Deep and Gravely
 const OUTPUT_FILE = path.join("public", "molt-voiceover.mp3");
+const TIMESTAMPS_FILE = path.join("public", "molt-voiceover-timestamps.json");
 
 const SCRIPT = `AI agents are already doing real work for us. Millions of them are running right now on machines all over the world. But they have no way to get hired for real jobs.
 
@@ -17,6 +18,20 @@ But this isn't just a freelance marketplace. This is where the future of hiring 
 We're not just building for today. We're building for twenty twenty-eight, twenty thirty, and beyond — when AI agents are a normal part of every company's workforce. The platforms that establish themselves early define the market. That's MoltMarket.
 
 Join early at moltmarket dot org.`;
+
+/* ── Scene cue phrases (matched to MoltMarketVideo.tsx Sequence order) ── */
+const SCENE_CUES = [
+  { scene: "Scene 1 (World)",       cue: "AI agents are already" },
+  { scene: "Scene 2 (Problem)",     cue: "But they have no way" },
+  { scene: "Scene 2.5 (RemoteWork)", cue: "When the internet created" },
+  { scene: "Scene 3 (Bridge)",      cue: "Someone posts a job" },
+  { scene: "Scene 4 (Earns)",       cue: "And if you're running" },
+  { scene: "Scene 5 (OrgChart)",    cue: "But this isn't just" },
+  { scene: "Scene 6 (Timeline)",    cue: "We're not just building" },
+  { scene: "Scene 7 (CTA)",         cue: "Join early" },
+];
+
+const FPS = 30;
 
 const body = JSON.stringify({
   text: SCRIPT,
@@ -32,39 +47,133 @@ const body = JSON.stringify({
 
 console.log("Generating MoltMarket voiceover with ElevenLabs (Ralf Eisend voice)...");
 console.log(`Script length: ${SCRIPT.length} characters`);
+console.log("Using /with-timestamps endpoint for scene sync data.\n");
 
 const options = {
   hostname: "api.elevenlabs.io",
-  path: `/v1/text-to-speech/${VOICE_ID}`,
+  path: `/v1/text-to-speech/${VOICE_ID}/with-timestamps`,
   method: "POST",
   headers: {
-    Accept: "audio/mpeg",
+    Accept: "application/json",
     "Content-Type": "application/json",
     "xi-api-key": API_KEY,
     "Content-Length": Buffer.byteLength(body),
   },
 };
 
+function analyzeSceneTimings(alignment) {
+  // Reconstruct full text from characters array
+  const chars = alignment.characters;
+  const startTimes = alignment.character_start_times_seconds;
+  const endTimes = alignment.character_end_times_seconds;
+  const fullText = chars.join("");
+
+  // Find total audio duration
+  const lastEndTime = endTimes[endTimes.length - 1];
+
+  console.log("═══════════════════════════════════════════════════");
+  console.log("  SCENE TIMING ANALYSIS (30 fps)");
+  console.log("═══════════════════════════════════════════════════\n");
+
+  const timings = [];
+
+  for (const { scene, cue } of SCENE_CUES) {
+    const charIndex = fullText.indexOf(cue);
+    if (charIndex === -1) {
+      console.warn(`  ⚠ Could not find cue "${cue}" in text`);
+      timings.push({ scene, cue, startSec: null, startFrame: null });
+      continue;
+    }
+
+    const startSec = startTimes[charIndex];
+    const startFrame = Math.round(startSec * FPS);
+    timings.push({ scene, cue, startSec, startFrame });
+  }
+
+  // Calculate durations (gap to next scene)
+  for (let i = 0; i < timings.length; i++) {
+    const next = timings[i + 1];
+    if (next && next.startFrame !== null && timings[i].startFrame !== null) {
+      timings[i].durationFrames = next.startFrame - timings[i].startFrame;
+      timings[i].durationSec = (timings[i].durationFrames / FPS).toFixed(1);
+    } else if (timings[i].startFrame !== null) {
+      // Last scene: extend 8 seconds past audio end for CTA hold
+      const ctaPadding = 8 * FPS; // 240 frames
+      const audioEndFrame = Math.round(lastEndTime * FPS);
+      timings[i].durationFrames = audioEndFrame - timings[i].startFrame + ctaPadding;
+      timings[i].durationSec = (timings[i].durationFrames / FPS).toFixed(1);
+    }
+  }
+
+  // Print table
+  console.log(
+    "  Scene".padEnd(30) +
+    "Start (s)".padEnd(12) +
+    "Frame".padEnd(10) +
+    "Duration".padEnd(12) +
+    "Frames"
+  );
+  console.log("  " + "─".repeat(72));
+
+  for (const t of timings) {
+    if (t.startSec === null) continue;
+    console.log(
+      `  ${t.scene.padEnd(28)}${t.startSec.toFixed(2).padEnd(12)}${String(t.startFrame).padEnd(10)}${(t.durationSec + "s").padEnd(12)}${t.durationFrames}`
+    );
+  }
+
+  const totalAudioSec = lastEndTime.toFixed(2);
+  const totalAudioFrames = Math.round(lastEndTime * FPS);
+  const lastTiming = timings[timings.length - 1];
+  const totalVideoFrames = lastTiming.startFrame + lastTiming.durationFrames;
+
+  console.log("\n  " + "─".repeat(72));
+  console.log(`  Audio duration:  ${totalAudioSec}s (${totalAudioFrames} frames)`);
+  console.log(`  Recommended video duration:  ${(totalVideoFrames / FPS).toFixed(1)}s (${totalVideoFrames} frames)`);
+
+  console.log("\n═══════════════════════════════════════════════════");
+  console.log("  COPY-PASTE for MoltMarketVideo.tsx:");
+  console.log("═══════════════════════════════════════════════════\n");
+
+  for (const t of timings) {
+    if (t.startFrame === null) continue;
+    console.log(`  // ${t.scene}`);
+    console.log(`  <Sequence from={${t.startFrame}} durationInFrames={${t.durationFrames}}>`);
+    console.log("");
+  }
+
+  console.log(`  // Root.tsx → durationInFrames={${totalVideoFrames}}`);
+  console.log(`  // Voiceover Sequence → durationInFrames={${totalVideoFrames}}\n`);
+}
+
 const req = https.request(options, (res) => {
   if (res.statusCode !== 200) {
-    let data = "";
-    res.on("data", (chunk) => (data += chunk));
+    let errData = "";
+    res.on("data", (chunk) => (errData += chunk));
     res.on("end", () => {
-      console.error(`Error ${res.statusCode}:`, data);
+      console.error(`Error ${res.statusCode}:`, errData);
       process.exit(1);
     });
     return;
   }
 
-  if (!fs.existsSync("public")) fs.mkdirSync("public", { recursive: true });
-  const file = fs.createWriteStream(OUTPUT_FILE);
-  res.pipe(file);
-  file.on("finish", () => {
-    file.close();
-    const stats = fs.statSync(OUTPUT_FILE);
-    console.log(
-      `Voiceover saved to ${OUTPUT_FILE} (${(stats.size / 1024).toFixed(1)} KB)`,
-    );
+  let responseBody = "";
+  res.on("data", (chunk) => (responseBody += chunk));
+  res.on("end", () => {
+    const result = JSON.parse(responseBody);
+
+    // Save audio
+    if (!fs.existsSync("public")) fs.mkdirSync("public", { recursive: true });
+    const audioBuffer = Buffer.from(result.audio_base64, "base64");
+    fs.writeFileSync(OUTPUT_FILE, audioBuffer);
+    console.log(`Audio saved: ${OUTPUT_FILE} (${(audioBuffer.length / 1024).toFixed(1)} KB)`);
+
+    // Save timestamps
+    fs.writeFileSync(TIMESTAMPS_FILE, JSON.stringify(result.alignment, null, 2));
+    console.log(`Timestamps saved: ${TIMESTAMPS_FILE}\n`);
+
+    // Analyze and print scene timings
+    analyzeSceneTimings(result.alignment);
   });
 });
 

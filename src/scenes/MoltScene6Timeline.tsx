@@ -154,7 +154,8 @@ const MilestoneCard: React.FC<{
         border: `1px solid ${molt.colors.border}`,
         boxShadow: `
           ${molt.shadows.card},
-          inset 0 1px 0 rgba(255, 255, 255, 0.04)
+          inset 0 1px 0 rgba(255, 255, 255, 0.04),
+          0 0 ${20 + glowPulse * 15}px ${color}${Math.round(glowPulse * 80).toString(16).padStart(2, "0")}
         `,
         opacity: progress,
         transform: `translateY(${translateY}px) scale(${scale})`,
@@ -219,7 +220,7 @@ const TrendLine: React.FC<{
         position: "absolute",
         left: x,
         top: y,
-        opacity: progress * 0.4,
+        opacity: progress * 0.7,
         overflow: "visible",
       }}
     >
@@ -262,7 +263,7 @@ const TrendIcon: React.FC<{
         viewBox="0 0 24 24"
         fill="none"
         style={{
-          opacity: progress * 0.5,
+          opacity: progress * 0.75,
           transform: `translateY(${drift}px)`,
         }}
       >
@@ -293,7 +294,7 @@ const TrendIcon: React.FC<{
         viewBox="0 0 24 24"
         fill="none"
         style={{
-          opacity: progress * 0.5,
+          opacity: progress * 0.75,
           transform: `translateY(${drift}px)`,
         }}
       >
@@ -314,7 +315,7 @@ const TrendIcon: React.FC<{
         viewBox="0 0 24 24"
         fill="none"
         style={{
-          opacity: progress * 0.5,
+          opacity: progress * 0.75,
           transform: `translateY(${drift}px)`,
         }}
       >
@@ -343,7 +344,7 @@ const TrendIcon: React.FC<{
       viewBox="0 0 24 24"
       fill="none"
       style={{
-        opacity: progress * 0.5,
+        opacity: progress * 0.75,
         transform: `translateY(${drift}px)`,
       }}
     >
@@ -495,11 +496,11 @@ export const MoltScene6Timeline: React.FC = () => {
               position: "absolute",
               left: stat.x,
               top: stat.y,
-              opacity: sProgress * 0.7,
+              opacity: sProgress * 0.9,
               transform: `translateY(${sY + drift}px)`,
               padding: "14px 20px",
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.10)",
               borderRadius: 16,
               backdropFilter: "blur(12px)",
               minWidth: 140,
@@ -662,7 +663,7 @@ export const MoltScene6Timeline: React.FC = () => {
           left: lineStartX,
           top: cardsCenterY + 100 + 14,
           width: lineWidth,
-          height: 2,
+          height: 3,
           background: molt.colors.border,
           borderRadius: 1,
         }}
@@ -674,17 +675,41 @@ export const MoltScene6Timeline: React.FC = () => {
           left: lineStartX,
           top: cardsCenterY + 100 + 14,
           width: lineWidth * lineProgress,
-          height: 2,
+          height: 3,
           background: `linear-gradient(
             90deg,
             ${molt.colors.goldDark},
             ${molt.colors.gold},
             ${molt.colors.goldLight}
           )`,
-          borderRadius: 1,
-          boxShadow: `0 0 16px ${molt.colors.goldGlowStrong}`,
+          borderRadius: 1.5,
+          boxShadow: `0 0 24px ${molt.colors.goldGlowStrong}, 0 0 48px ${molt.colors.goldGlow}`,
         }}
       />
+
+      {/* ── Energy particles along the timeline ── */}
+      {[0.2, 0.45, 0.7].map((offset, i) => {
+        const particleX = lineStartX + lineWidth * lineProgress * offset;
+        const particleOpacity = lineProgress > offset ? 0.8 : 0;
+        const particlePulse = 0.5 + Math.sin(frame * 0.08 + i * 2) * 0.5;
+        return (
+          <div
+            key={`particle-${i}`}
+            style={{
+              position: "absolute",
+              left: particleX - 4,
+              top: cardsCenterY + 100 + 14 - 4,
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: molt.colors.goldLight,
+              boxShadow: `0 0 10px ${molt.colors.gold}, 0 0 20px ${molt.colors.goldGlow}`,
+              opacity: particleOpacity * particlePulse,
+              zIndex: 2,
+            }}
+          />
+        );
+      })}
 
       {/* ── Three milestone dots on the line ── */}
       {milestones.map((m, i) => {
