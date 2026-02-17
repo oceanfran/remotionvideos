@@ -151,14 +151,14 @@ export const MoltScene7CTA: React.FC = () => {
   });
   const visibleUrl = urlText.slice(0, Math.floor(urlProgress));
   const cursorVisible = Math.floor(frame / 15) % 2 === 0;
-  const showCursor = frame >= 105 && frame < 340;
+  const showCursor = frame >= 105 && frame < 287;
 
   // Button entrance
-  const buttonSpring = hd(175, 22, 130);
+  const buttonSpring = hd(160, 22, 130);
   const buttonY = interpolate(buttonSpring, [0, 1], [20, 0]);
 
   // Tagline entrance
-  const taglineSpring = hd(195, 28, 120);
+  const taglineSpring = hd(175, 28, 120);
   const taglineY = interpolate(taglineSpring, [0, 1], [20, 0]);
 
   // ── Pulsing glow behind logo (subtle 0.15 oscillation) ──
@@ -171,8 +171,8 @@ export const MoltScene7CTA: React.FC = () => {
   const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
   const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // ── Fade to black (last 30 frames: 310-340) ────
-  const fadeToBlack = interpolate(frame, [310, 340], [0, 1], {
+  // ── Fade to black (last 30 frames: 257-287) ────
+  const fadeToBlack = interpolate(frame, [257, 287], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

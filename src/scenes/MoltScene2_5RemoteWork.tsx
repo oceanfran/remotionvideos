@@ -49,13 +49,13 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  const exitOpacity = interpolate(frame, [388, 413], [1, 0], {
+  const exitOpacity = interpolate(frame, [398, 423], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
 
-  const exitScale = interpolate(frame, [388, 413], [1, 0.97], {
+  const exitScale = interpolate(frame, [398, 423], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

@@ -11,22 +11,22 @@ import { MoltScene6Timeline } from "./scenes/MoltScene6Timeline";
 import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
 
 /* ──────────────────────────────────────────────────
-   Molt Market — ~106s promo  (1920×1080, 30fps)
-   Total: 3182 frames (synced to voiceover timestamps)
+   Molt Market — ~103s promo  (1920×1080, 30fps)
+   Total: 3084 frames (synced to voiceover timestamps)
 
-   Scene 1:      0.0-6.6s    (0-198)        The World Right Now
-   Scene 2:      6.6-9.7s    (198-292)      The Problem
-   Scene 2.5:    9.7-23.5s   (292-705)      Remote Work → MoltMarket
-   Scene 3a:     23.5-29.1s  (705-872)      Human → AI flow
-   Scene 3b:     29.1-35.1s  (872-1054)     AI → Human flow
-   Scene 3c:     35.1-39.6s  (1054-1189)    AI → AI flow
-   Scene 3d:     39.6-42.1s  (1189-1264)    Every direction
-   Scene 4:      42.1-54.7s  (1264-1642)    Your Agent Earns for You
-   Scene 5a:     54.7-61.1s  (1642-1832)    Not just freelance
-   Scene 5b:     61.1-71.4s  (1832-2143)    Role cards
-   Scene 5c:     71.4-81.1s  (2143-2432)    Platform features
-   Scene 6:      81.1-94.7s  (2432-2842)    Building for the Future
-   Scene 7:      94.7-106.1s (2842-3182)    CTA
+   Scene 1:      0.0-7.7s    (0-230)        The World Right Now
+   Scene 2:      7.7-10.7s   (230-322)      The Problem
+   Scene 2.5:    10.7-24.9s  (322-745)      Remote Work → MoltMarket
+   Scene 3a:     24.9-30.0s  (745-899)      Human → AI flow
+   Scene 3b:     30.0-35.0s  (899-1050)     AI → Human flow
+   Scene 3c:     35.0-39.7s  (1050-1190)    AI → AI flow
+   Scene 3d:     39.7-42.8s  (1190-1283)    Every direction
+   Scene 4:      42.8-55.6s  (1283-1667)    Your Agent Earns for You
+   Scene 5a:     55.6-61.2s  (1667-1837)    Not just freelance
+   Scene 5b:     61.2-72.0s  (1837-2161)    Role cards
+   Scene 5c:     72.0-80.0s  (2161-2399)    Platform features
+   Scene 6:      80.0-93.2s  (2399-2797)    Building for the Future
+   Scene 7:      93.2-102.8s (2797-3084)    CTA
    ────────────────────────────────────────────────── */
 
 const VoiceoverAudio: React.FC = () => {
@@ -54,73 +54,73 @@ const BgMusicAudio: React.FC = () => {
 export const MoltMarketVideo: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#0A0A0B" }}>
-      {/* Scene 1: The World Right Now (0-6.6s) */}
-      <Sequence from={0} durationInFrames={198}>
+      {/* Scene 1: The World Right Now (0-7.7s) */}
+      <Sequence from={0} durationInFrames={230}>
         <MoltScene1World />
       </Sequence>
 
-      {/* Scene 2: The Problem (6.6-9.7s) */}
-      <Sequence from={198} durationInFrames={94}>
+      {/* Scene 2: The Problem (7.7-10.7s) */}
+      <Sequence from={230} durationInFrames={92}>
         <MoltScene2Problem />
       </Sequence>
 
-      {/* Scene 2.5: Remote Work → MoltMarket (9.7-23.5s) */}
-      <Sequence from={292} durationInFrames={413}>
+      {/* Scene 2.5: Remote Work → MoltMarket (10.7-24.9s) */}
+      <Sequence from={322} durationInFrames={423}>
         <MoltScene2_5RemoteWork />
       </Sequence>
 
-      {/* Scene 3a: Human → AI (23.5-29.1s) — "Someone posts a job" */}
-      <Sequence from={705} durationInFrames={167}>
+      {/* Scene 3a: Human → AI (24.9-30.0s) — "Someone posts a job" */}
+      <Sequence from={745} durationInFrames={154}>
         <MoltScene3Flow variant="human-to-ai" />
       </Sequence>
 
-      {/* Scene 3b: AI → Human (29.1-35.1s) — "AI posts a task" */}
-      <Sequence from={872} durationInFrames={182}>
+      {/* Scene 3b: AI → Human (30.0-35.0s) — "AI posts a task" */}
+      <Sequence from={899} durationInFrames={151}>
         <MoltScene3Flow variant="ai-to-human" />
       </Sequence>
 
-      {/* Scene 3c: AI → AI (35.1-39.6s) — "AI hires another agent" */}
-      <Sequence from={1054} durationInFrames={135}>
+      {/* Scene 3c: AI → AI (35.0-39.7s) — "AI hires another agent" */}
+      <Sequence from={1050} durationInFrames={140}>
         <MoltScene3Flow variant="ai-to-ai" />
       </Sequence>
 
-      {/* Scene 3d: Every Direction (39.6-42.1s) — "Every direction" */}
-      <Sequence from={1189} durationInFrames={75}>
+      {/* Scene 3d: Every Direction (39.7-42.8s) — "Every direction" */}
+      <Sequence from={1190} durationInFrames={93}>
         <MoltScene3Flow variant="all-directions" />
       </Sequence>
 
-      {/* Scene 4: Your Agent Earns for You (42.1-54.7s) */}
-      <Sequence from={1264} durationInFrames={378}>
+      {/* Scene 4: Your Agent Earns for You (42.8-55.6s) */}
+      <Sequence from={1283} durationInFrames={384}>
         <MoltScene4Earns />
       </Sequence>
 
-      {/* Scene 5a: Not just freelance (54.7-61.1s) */}
-      <Sequence from={1642} durationInFrames={190}>
+      {/* Scene 5a: Not just freelance (55.6-61.2s) */}
+      <Sequence from={1667} durationInFrames={170}>
         <MoltScene5a_FutureHiring />
       </Sequence>
 
-      {/* Scene 5b: Role cards (61.1-71.4s) */}
-      <Sequence from={1832} durationInFrames={311}>
+      {/* Scene 5b: Role cards (61.2-72.0s) */}
+      <Sequence from={1837} durationInFrames={324}>
         <MoltScene5OrgChart />
       </Sequence>
 
-      {/* Scene 5c: Platform features (71.4-81.1s) */}
-      <Sequence from={2143} durationInFrames={289}>
+      {/* Scene 5c: Platform features (72.0-80.0s) */}
+      <Sequence from={2161} durationInFrames={238}>
         <MoltScene5c_Platform />
       </Sequence>
 
-      {/* Scene 6: Building for the Future (81.1-94.7s) */}
-      <Sequence from={2432} durationInFrames={410}>
+      {/* Scene 6: Building for the Future (80.0-93.2s) */}
+      <Sequence from={2399} durationInFrames={398}>
         <MoltScene6Timeline />
       </Sequence>
 
-      {/* Scene 7: CTA (94.7-106.1s) — starts 1.4s earlier for sync */}
-      <Sequence from={2842} durationInFrames={340}>
+      {/* Scene 7: CTA (93.2-102.8s) */}
+      <Sequence from={2797} durationInFrames={287}>
         <MoltScene7CTA />
       </Sequence>
 
       {/* Audio layers — voiceover plays once and stops naturally */}
-      <Sequence from={0} durationInFrames={3182}>
+      <Sequence from={0} durationInFrames={3084}>
         <VoiceoverAudio />
       </Sequence>
       <BgMusicAudio />

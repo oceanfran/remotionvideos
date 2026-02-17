@@ -86,13 +86,13 @@ export const MoltScene2Problem: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // Exit (adjusted for 94-frame duration)
-  const exitOp = interpolate(frame, [69, 94], [1, 0], {
+  // Exit (adjusted for 92-frame duration)
+  const exitOp = interpolate(frame, [67, 92], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [69, 94], [1, 0.97], {
+  const exitScale = interpolate(frame, [67, 92], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
