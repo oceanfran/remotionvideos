@@ -32,13 +32,13 @@ export const MoltScene3Bridge: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  const exitOpacity = interpolate(frame, [275, 300], [1, 0], {
+  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
 
-  const exitScale = interpolate(frame, [275, 300], [1, 0.97], {
+  const exitScale = interpolate(frame, [215, 240], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
@@ -87,7 +87,7 @@ export const MoltScene3Bridge: React.FC = () => {
   });
 
   /* ── Inner card shimmer line (subtle activity indicator) ── */
-  const shimmerProgress = interpolate(frame, [60, 220], [0, 1], {
+  const shimmerProgress = interpolate(frame, [60, 180], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

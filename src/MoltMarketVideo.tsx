@@ -1,6 +1,7 @@
 import { AbsoluteFill, Audio, Loop, Sequence, staticFile } from "remotion";
 import { MoltScene1World } from "./scenes/MoltScene1World";
 import { MoltScene2Problem } from "./scenes/MoltScene2Problem";
+import { MoltScene2_5RemoteWork } from "./scenes/MoltScene2_5RemoteWork";
 import { MoltScene3Bridge } from "./scenes/MoltScene3Bridge";
 import { MoltScene4Earns } from "./scenes/MoltScene4Earns";
 import { MoltScene5OrgChart } from "./scenes/MoltScene5OrgChart";
@@ -11,13 +12,14 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
    Molt Market — 60-second promo  (1920×1080, 30fps)
    Total: 1800 frames
 
-   Scene 1:  0-5s    (0-150)      The World Right Now
-   Scene 2:  5-10s   (150-300)    The Problem
-   Scene 3:  10-20s  (300-600)    MoltMarket is the Bridge
-   Scene 4:  20-28s  (600-840)    Your Agent Earns for You
-   Scene 5:  28-37s  (840-1110)   Bigger Than Freelance
-   Scene 6:  37-44s  (1110-1320)  Building for the Future
-   Scene 7:  44-60s  (1320-1800)  CTA
+   Scene 1:    0-5s    (0-150)      The World Right Now
+   Scene 2:    5-9s    (150-270)    The Problem
+   Scene 2.5:  9-17s   (270-510)    Remote Work → MoltMarket
+   Scene 3:    17-25s  (510-750)    MoltMarket is the Bridge
+   Scene 4:    25-33s  (750-990)    Your Agent Earns for You
+   Scene 5:    33-41s  (990-1230)   Bigger Than Freelance
+   Scene 6:    41-50s  (1230-1500)  Building for the Future
+   Scene 7:    50-60s  (1500-1800)  CTA
    ────────────────────────────────────────────────── */
 
 const VoiceoverAudio: React.FC = () => {
@@ -50,33 +52,38 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene1World />
       </Sequence>
 
-      {/* Scene 2: The Problem (5-10s) */}
-      <Sequence from={150} durationInFrames={150}>
+      {/* Scene 2: The Problem (5-9s) */}
+      <Sequence from={150} durationInFrames={120}>
         <MoltScene2Problem />
       </Sequence>
 
-      {/* Scene 3: MoltMarket is the Bridge (10-20s) */}
-      <Sequence from={300} durationInFrames={300}>
+      {/* Scene 2.5: Remote Work → MoltMarket (9-17s) */}
+      <Sequence from={270} durationInFrames={240}>
+        <MoltScene2_5RemoteWork />
+      </Sequence>
+
+      {/* Scene 3: MoltMarket is the Bridge (17-25s) */}
+      <Sequence from={510} durationInFrames={240}>
         <MoltScene3Bridge />
       </Sequence>
 
-      {/* Scene 4: Your Agent Earns for You (20-28s) */}
-      <Sequence from={600} durationInFrames={240}>
+      {/* Scene 4: Your Agent Earns for You (25-33s) */}
+      <Sequence from={750} durationInFrames={240}>
         <MoltScene4Earns />
       </Sequence>
 
-      {/* Scene 5: Bigger Than Freelance (28-37s) */}
-      <Sequence from={840} durationInFrames={270}>
+      {/* Scene 5: Bigger Than Freelance (33-41s) */}
+      <Sequence from={990} durationInFrames={240}>
         <MoltScene5OrgChart />
       </Sequence>
 
-      {/* Scene 6: Building for the Future (37-44s) */}
-      <Sequence from={1110} durationInFrames={210}>
+      {/* Scene 6: Building for the Future (41-50s) */}
+      <Sequence from={1230} durationInFrames={270}>
         <MoltScene6Timeline />
       </Sequence>
 
-      {/* Scene 7: CTA (44-60s) */}
-      <Sequence from={1320} durationInFrames={480}>
+      {/* Scene 7: CTA (50-60s) */}
+      <Sequence from={1500} durationInFrames={300}>
         <MoltScene7CTA />
       </Sequence>
 

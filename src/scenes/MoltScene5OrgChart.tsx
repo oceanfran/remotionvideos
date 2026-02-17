@@ -39,13 +39,13 @@ export const MoltScene5OrgChart: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  // ── Exit fade with scale-down (last 25 frames: 275-300) ──
-  const exitOpacity = interpolate(frame, [275, 300], [1, 0], {
+  // ── Exit fade with scale-down (last 25 frames: 215-240) ──
+  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [275, 300], [1, 0.96], {
+  const exitScale = interpolate(frame, [215, 240], [1, 0.96], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

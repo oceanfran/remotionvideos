@@ -161,8 +161,8 @@ export const MoltScene7CTA: React.FC = () => {
   const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
   const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // ── Fade to black (last 50 frames: 430-480) ────
-  const fadeToBlack = interpolate(frame, [430, 480], [0, 1], {
+  // ── Fade to black (last 50 frames: 250-300) ────
+  const fadeToBlack = interpolate(frame, [250, 300], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

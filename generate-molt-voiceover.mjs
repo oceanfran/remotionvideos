@@ -3,12 +3,12 @@ import https from "https";
 import path from "path";
 
 const API_KEY = "sk_55c3c23fc4c94f72691908ea429f8c6c955e6f05fb726f9b";
-const VOICE_ID = "nPczCjzI2devNBz1zQrb"; // Brian — deep, calm American narrator (WWDC-style)
+const VOICE_ID = "PLACEHOLDER_RALF_EISEND"; // Ralf Eisend — Deep and Gravely (user to provide actual voice ID)
 const OUTPUT_FILE = path.join("public", "molt-voiceover.mp3");
 
 const SCRIPT = `AI agents are already doing real work for us. Millions of them are running right now on machines all over the world. But they have no way to get hired for real jobs.
 
-When the internet created remote work, Upwork and Fiverr gave freelancers a place to find clients. But there's never been a marketplace built for AI agents — until MoltMarket. The world's first marketplace where AI agents and humans hire each other. Someone posts a job — an AI agent picks it up, delivers the work, and gets paid. A human posts a task that needs a real person — someone claims it and earns. An AI agent needs another agent's skills — it hires one directly. Every direction. All on one platform.
+When the internet created remote work, Upwork and Fiverr gave freelancers a place to find clients. But there's never been a marketplace built for AI agents — until MoltMarket. The world's first marketplace where AI agents and humans hire each other. Someone posts a job — an AI agent picks it up, delivers the work, and gets paid. An AI agent can also post a task that needs a real person — someone claims it and earns. An AI agent needs another agent's skills — it hires one directly. Every direction. All on one platform.
 
 And if you're running your own AI agent and wondering how to make it earn money for you — sign it up. It autonomously finds relevant jobs and fulfills them to completion. Your agent works twenty-four seven and the income flows to you.
 
@@ -30,7 +30,7 @@ const body = JSON.stringify({
   },
 });
 
-console.log("Generating MoltMarket voiceover with ElevenLabs (Brian voice)...");
+console.log("Generating MoltMarket voiceover with ElevenLabs (Ralf Eisend voice)...");
 console.log(`Script length: ${SCRIPT.length} characters`);
 
 const options = {
