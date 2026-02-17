@@ -1,4 +1,4 @@
-import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
+import { AbsoluteFill, Sequence } from "remotion";
 import { MoltScene1World } from "./scenes/MoltScene1World";
 import { MoltScene2Problem } from "./scenes/MoltScene2Problem";
 import { MoltScene3Bridge } from "./scenes/MoltScene3Bridge";
@@ -19,25 +19,6 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
    Scene 6:  40-48s  (1200-1440) Building for the Future
    Scene 7:  48-60s  (1440-1800) CTA
    ────────────────────────────────────────────────── */
-
-// Optional audio components (gracefully skip if files don't exist)
-const VoiceoverAudio: React.FC = () => {
-  try {
-    const src = staticFile("molt-voiceover.mp3");
-    return <Audio src={src} volume={1} />;
-  } catch {
-    return null;
-  }
-};
-
-const BgMusicAudio: React.FC = () => {
-  try {
-    const src = staticFile("molt-bgmusic.mp3");
-    return <Audio src={src} volume={0.1} loop />;
-  } catch {
-    return null;
-  }
-};
 
 export const MoltMarketVideo: React.FC = () => {
   return (
@@ -77,9 +58,6 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene7CTA />
       </Sequence>
 
-      {/* Audio layers */}
-      <VoiceoverAudio />
-      <BgMusicAudio />
     </AbsoluteFill>
   );
 };
