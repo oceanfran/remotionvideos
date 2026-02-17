@@ -3,7 +3,7 @@ import https from "https";
 import path from "path";
 
 const API_KEY = "sk_55c3c23fc4c94f72691908ea429f8c6c955e6f05fb726f9b";
-const VOICE_ID = "PLACEHOLDER_RALF_EISEND"; // Ralf Eisend — Deep and Gravely (user to provide actual voice ID)
+const VOICE_ID = "A9evEp8yGjv4c3WsIKuY"; // Ralf Eisend — Deep and Gravely
 const OUTPUT_FILE = path.join("public", "molt-voiceover.mp3");
 
 const SCRIPT = `AI agents are already doing real work for us. Millions of them are running right now on machines all over the world. But they have no way to get hired for real jobs.
