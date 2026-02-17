@@ -17,12 +17,6 @@ import { molt } from "../moltTheme";
    clean fade to black.
    ────────────────────────────────────────────────── */
 
-// Deterministic film grain: seeded pseudo-random via simple hash
-const grain = (x: number, y: number, f: number): number => {
-  const n = Math.sin(x * 12.9898 + y * 78.233 + f * 43.1234) * 43758.5453;
-  return n - Math.floor(n);
-};
-
 /* ── MM Gold Coin Logo ── */
 const MMCoinLogo: React.FC<{ size: number; opacity: number }> = ({
   size,
@@ -176,11 +170,6 @@ export const MoltScene7CTA: React.FC = () => {
 
   // ── Combined content opacity ────────────────────
   const contentOpacity = entranceFade * (1 - fadeToBlack);
-
-  // ── Film grain canvas dimensions ────────────────
-  const grainSize = 4;
-  const grainCols = Math.ceil(1920 / grainSize);
-  const grainRows = Math.ceil(1080 / grainSize);
 
   return (
     <AbsoluteFill
@@ -366,36 +355,18 @@ export const MoltScene7CTA: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Film grain noise overlay ───────────────── */}
-      <svg
-        width="1920"
-        height="1080"
+      {/* ── Film grain noise overlay (lightweight CSS) ── */}
+      <div
         style={{
           position: "absolute",
           inset: 0,
           opacity: 0.025,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: "128px 128px",
           pointerEvents: "none",
-          mixBlendMode: "screen",
+          mixBlendMode: "overlay",
         }}
-      >
-        {Array.from({ length: grainRows }, (_, row) =>
-          Array.from({ length: grainCols }, (_, col) => {
-            const brightness = grain(col, row, frame);
-            if (brightness < 0.3 || brightness > 0.7) return null;
-            const g = Math.floor(brightness * 255);
-            return (
-              <rect
-                key={`${row}-${col}`}
-                x={col * grainSize}
-                y={row * grainSize}
-                width={grainSize}
-                height={grainSize}
-                fill={`rgb(${g},${g},${g})`}
-              />
-            );
-          })
-        )}
-      </svg>
+      />
 
       {/* ── Fade to black overlay ──────────────────── */}
       <div
