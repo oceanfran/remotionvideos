@@ -369,13 +369,13 @@ export const MoltScene6Timeline: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  /* ── Exit fade with scale-down (last 25 frames: 427-452) ── */
-  const exitOpacity = interpolate(frame, [427, 452], [1, 0], {
+  /* ── Exit fade with scale-down (last 25 frames: 385-410) ── */
+  const exitOpacity = interpolate(frame, [385, 410], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [427, 452], [1, 0.97], {
+  const exitScale = interpolate(frame, [385, 410], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

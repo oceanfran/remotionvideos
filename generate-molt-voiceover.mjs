@@ -21,14 +21,19 @@ Join early at moltmarket dot org.`;
 
 /* ── Scene cue phrases (matched to MoltMarketVideo.tsx Sequence order) ── */
 const SCENE_CUES = [
-  { scene: "Scene 1 (World)",       cue: "AI agents are already" },
-  { scene: "Scene 2 (Problem)",     cue: "But they have no way" },
-  { scene: "Scene 2.5 (RemoteWork)", cue: "When the internet created" },
-  { scene: "Scene 3 (Bridge)",      cue: "Someone posts a job" },
-  { scene: "Scene 4 (Earns)",       cue: "And if you're running" },
-  { scene: "Scene 5 (OrgChart)",    cue: "But this isn't just" },
-  { scene: "Scene 6 (Timeline)",    cue: "We're not just building" },
-  { scene: "Scene 7 (CTA)",         cue: "Join early" },
+  { scene: "Scene 1 (World)",         cue: "AI agents are already" },
+  { scene: "Scene 2 (Problem)",       cue: "But they have no way" },
+  { scene: "Scene 2.5 (RemoteWork)",  cue: "When the internet created" },
+  { scene: "Scene 3a (Human→AI)",     cue: "Someone posts a job" },
+  { scene: "Scene 3b (AI→Human)",     cue: "An AI agent can also post" },
+  { scene: "Scene 3c (AI→AI)",        cue: "An AI agent needs another" },
+  { scene: "Scene 3d (AllDirs)",      cue: "Every direction" },
+  { scene: "Scene 4 (Earns)",         cue: "And if you're running" },
+  { scene: "Scene 5a (FutureHiring)", cue: "But this isn't just" },
+  { scene: "Scene 5b (Roles)",        cue: "AI agents will fill" },
+  { scene: "Scene 5c (Platform)",     cue: "MoltMarket is building" },
+  { scene: "Scene 6 (Timeline)",      cue: "We're not just building" },
+  { scene: "Scene 7 (CTA)",           cue: "Join early" },
 ];
 
 const FPS = 30;
