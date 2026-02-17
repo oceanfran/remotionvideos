@@ -32,13 +32,13 @@ export const MoltScene3Bridge: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
+  const exitOpacity = interpolate(frame, [534, 559], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
 
-  const exitScale = interpolate(frame, [215, 240], [1, 0.97], {
+  const exitScale = interpolate(frame, [534, 559], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

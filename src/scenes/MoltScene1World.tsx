@@ -68,12 +68,12 @@ export const MoltScene1World: React.FC = () => {
   const subY = interpolate(subSpring, [0, 1], [25, 0]);
 
   // Exit: clean fade + subtle scale-down
-  const exitOp = interpolate(frame, [125, 150], [1, 0], {
+  const exitOp = interpolate(frame, [173, 198], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [125, 150], [1, 0.97], {
+  const exitScale = interpolate(frame, [173, 198], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

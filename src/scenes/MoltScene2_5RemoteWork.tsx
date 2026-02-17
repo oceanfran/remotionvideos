@@ -18,24 +18,24 @@ import { molt } from "../moltTheme";
 
 /* ── Platform cards data ── */
 const platforms = [
-  { name: "Upwork", color: "#6FDA44", delay: 55 },
-  { name: "Fiverr", color: "#1DBF73", delay: 65 },
+  { name: "Upwork", color: "#6FDA44", delay: 95 },
+  { name: "Fiverr", color: "#1DBF73", delay: 112 },
 ];
 
 /* ── Freelancer profile nodes ── */
 const freelancers = [
-  { x: 25, y: 35, delay: 80, label: "Designer" },
-  { x: 75, y: 35, delay: 85, label: "Developer" },
-  { x: 20, y: 65, delay: 90, label: "Writer" },
-  { x: 80, y: 65, delay: 95, label: "Marketer" },
+  { x: 25, y: 35, delay: 138, label: "Designer" },
+  { x: 75, y: 35, delay: 146, label: "Developer" },
+  { x: 20, y: 65, delay: 155, label: "Writer" },
+  { x: 80, y: 65, delay: 164, label: "Marketer" },
 ];
 
 /* ── AI agent nodes (appear later, disconnected) ── */
 const aiAgents = [
-  { x: 25, y: 35, delay: 140 },
-  { x: 75, y: 35, delay: 145 },
-  { x: 20, y: 65, delay: 150 },
-  { x: 80, y: 65, delay: 155 },
+  { x: 25, y: 35, delay: 241 },
+  { x: 75, y: 35, delay: 249 },
+  { x: 20, y: 65, delay: 258 },
+  { x: 80, y: 65, delay: 267 },
 ];
 
 export const MoltScene2_5RemoteWork: React.FC = () => {
@@ -49,13 +49,13 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
+  const exitOpacity = interpolate(frame, [388, 413], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
 
-  const exitScale = interpolate(frame, [215, 240], [1, 0.97], {
+  const exitScale = interpolate(frame, [388, 413], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
@@ -84,46 +84,46 @@ export const MoltScene2_5RemoteWork: React.FC = () => {
   );
 
   /* ── Phase 1 → Phase 2 crossfade ── */
-  const phase1FadeOut = interpolate(frame, [50, 70], [1, 0], {
+  const phase1FadeOut = interpolate(frame, [86, 120], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  /* ── Phase 2: "Upwork and Fiverr" (55-130) ── */
-  const phase2FadeIn = interpolate(frame, [50, 70], [0, 1], {
+  /* ── Phase 2: "Upwork and Fiverr" (86-241) ── */
+  const phase2FadeIn = interpolate(frame, [86, 120], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const phase2FadeOut = interpolate(frame, [120, 140], [1, 0], {
+  const phase2FadeOut = interpolate(frame, [206, 241], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  /* ── Phase 3: "Never been a marketplace for AI agents" (130-200) ── */
-  const phase3FadeIn = interpolate(frame, [125, 145], [0, 1], {
+  /* ── Phase 3: "Never been a marketplace for AI agents" (215-370) ── */
+  const phase3FadeIn = interpolate(frame, [215, 249], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const phase3FadeOut = interpolate(frame, [195, 215], [1, 0], {
+  const phase3FadeOut = interpolate(frame, [335, 370], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   const phase3HeadlineSpring = spring({
-    frame: Math.max(0, frame - 130),
+    frame: Math.max(0, frame - 224),
     fps,
     config: { damping: 24, stiffness: 130 },
   });
   const phase3HeadlineY = interpolate(phase3HeadlineSpring, [0, 1], [30, 0]);
 
-  /* ── "until MoltMarket" gold flash (200+) ── */
+  /* ── "until MoltMarket" gold flash (335+) ── */
   const moltSpring = spring({
-    frame: Math.max(0, frame - 195),
+    frame: Math.max(0, frame - 335),
     fps,
     config: { damping: 22, stiffness: 140 },
   });
   const moltY = interpolate(moltSpring, [0, 1], [25, 0]);
-  const goldFlash = interpolate(frame, [195, 210, 225], [0, 0.25, 0], {
+  const goldFlash = interpolate(frame, [335, 361, 388], [0, 0.25, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

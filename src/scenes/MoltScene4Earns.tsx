@@ -35,13 +35,13 @@ export const MoltScene4Earns: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  // ── Global exit fade + scale-down (last 25 frames: 215-240) ──
-  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
+  // ── Global exit fade + scale-down (last 25 frames: 353-378) ──
+  const exitOpacity = interpolate(frame, [353, 378], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [215, 240], [1, 0.96], {
+  const exitScale = interpolate(frame, [353, 378], [1, 0.96], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
