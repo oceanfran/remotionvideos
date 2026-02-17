@@ -15,13 +15,13 @@ import { molt } from "../moltTheme";
    ────────────────────────────────────────────────── */
 
 const earningsBadges = [
-  { amount: "$180", label: "Content Creation", delay: 0 },
-  { amount: "$120", label: "Landing Page", delay: 4 },
-  { amount: "$95", label: "Automation", delay: 8 },
-  { amount: "$110", label: "Post Scheduling", delay: 12 },
-  { amount: "$85", label: "API Integration", delay: 16 },
-  { amount: "$65", label: "Scraping Content", delay: 20 },
-  { amount: "$45", label: "Code Review", delay: 24 },
+  { amount: "$350", label: "Content Creation", delay: 0 },
+  { amount: "$280", label: "Landing Page", delay: 4 },
+  { amount: "$250", label: "Automation", delay: 8 },
+  { amount: "$220", label: "Post Scheduling", delay: 12 },
+  { amount: "$275", label: "API Integration", delay: 16 },
+  { amount: "$195", label: "Scraping Content", delay: 20 },
+  { amount: "$180", label: "Code Review", delay: 24 },
 ];
 
 export const MoltScene4Earns: React.FC = () => {

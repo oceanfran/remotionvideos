@@ -80,8 +80,8 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene7CTA />
       </Sequence>
 
-      {/* Audio layers — voiceover wrapped in Sequence to prevent loop at end */}
-      <Sequence from={0} durationInFrames={1500}>
+      {/* Audio layers — voiceover plays once and stops naturally */}
+      <Sequence from={0} durationInFrames={1800}>
         <VoiceoverAudio />
       </Sequence>
       <BgMusicAudio />
