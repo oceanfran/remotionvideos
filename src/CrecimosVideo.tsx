@@ -51,13 +51,13 @@ export const CrecimosVideo: React.FC = () => {
         <SceneCRM />
       </Sequence>
 
-      {/* Scene 6: Easy Setup — 42-47s */}
-      <Sequence from={1260} durationInFrames={150}>
+      {/* Scene 6: Easy Setup — 42-49s */}
+      <Sequence from={1260} durationInFrames={210}>
         <SceneSetup />
       </Sequence>
 
-      {/* Scene 7: CTA — 47-54s */}
-      <Sequence from={1410} durationInFrames={210}>
+      {/* Scene 7: CTA — 49-56s */}
+      <Sequence from={1470} durationInFrames={210}>
         <SceneCTA />
       </Sequence>
 
@@ -84,7 +84,7 @@ const BgMusicAudio: React.FC = () => {
     const src = staticFile("bgmusic.mp3");
     return (
       <Loop durationInFrames={900}>
-        <Audio src={src} volume={0.12} />
+        <Audio src={src} volume={0.132} />
       </Loop>
     );
   } catch {

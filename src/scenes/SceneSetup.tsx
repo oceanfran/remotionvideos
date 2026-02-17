@@ -50,7 +50,7 @@ export const SceneSetup: React.FC = () => {
   });
   const consultY = interpolate(consultSpring, [0, 1], [30, 0]);
 
-  const exitOp = interpolate(frame, [138, 150], [1, 0], {
+  const exitOp = interpolate(frame, [185, 210], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
