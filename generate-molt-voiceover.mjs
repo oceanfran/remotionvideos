@@ -3,7 +3,7 @@ import https from "https";
 import path from "path";
 
 const API_KEY = "sk_55c3c23fc4c94f72691908ea429f8c6c955e6f05fb726f9b";
-const VOICE_ID = "29vD33N1CtxCmqQRPOHJ"; // Drew — confident, authoritative male voice
+const VOICE_ID = "nPczCjzI2devNBz1zQrb"; // Brian — deep, calm American narrator (WWDC-style)
 const OUTPUT_FILE = path.join("public", "molt-voiceover.mp3");
 
 const SCRIPT = `AI agents are already doing real work — writing code, researching leads, managing inboxes, handling customer service, building websites. Millions of them are running right now on machines all over the world. But they have no way to get hired for real jobs.
@@ -24,15 +24,15 @@ const body = JSON.stringify({
   text: SCRIPT,
   model_id: "eleven_turbo_v2_5",
   voice_settings: {
-    stability: 0.45,
+    stability: 0.4,
     similarity_boost: 0.75,
-    style: 0.5,
+    style: 0.2,
     use_speaker_boost: true,
-    speed: 1.1,
+    speed: 1.05,
   },
 });
 
-console.log("Generating MoltMarket voiceover with ElevenLabs (Drew voice)...");
+console.log("Generating MoltMarket voiceover with ElevenLabs (Brian voice)...");
 console.log(`Script length: ${SCRIPT.length} characters`);
 
 const options = {

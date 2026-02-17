@@ -7,7 +7,11 @@
     "build": "npx remotion render CrecimosVideo out/video.mp4",
     "render": "npx remotion render CrecimosVideo out/video.mp4",
     "voiceover": "node generate-voiceover.mjs",
-    "bgmusic": "node generate-bgmusic.mjs"
+    "bgmusic": "node generate-bgmusic.mjs",
+    "molt-voiceover": "node generate-molt-voiceover.mjs",
+    "molt-bgmusic": "node generate-molt-bgmusic.mjs",
+    "molt-audio": "node generate-molt-voiceover.mjs && node generate-molt-bgmusic.mjs",
+    "render-molt": "npx remotion render MoltMarketVideo out/molt-market.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.242",

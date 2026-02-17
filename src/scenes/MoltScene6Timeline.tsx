@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
   spring,
   useCurrentFrame,
@@ -9,90 +10,274 @@ import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
    Scene 6 — Building for the Future (40-48s · 240 frames)
-   Animated timeline: 2026 → 2028 → 2030
-   Marketplace visualization grows at each milestone.
+   Apple-inspired redesign: centered compositions,
+   massive typography, high-damping springs, film grain.
    ────────────────────────────────────────────────── */
 
 const milestones = [
   {
     year: "2026",
     label: "Early Adopters",
-    nodes: 6,
     color: molt.colors.gold,
-    delay: 30,
+    delay: 45,
   },
   {
     year: "2028",
     label: "Mainstream Adoption",
-    nodes: 14,
     color: molt.colors.goldLight,
-    delay: 80,
+    delay: 85,
   },
   {
     year: "2030",
     label: "The New Normal",
-    nodes: 24,
     color: molt.colors.goldLight,
-    delay: 130,
+    delay: 125,
   },
 ];
+
+/* ── Film grain noise overlay ── */
+const FilmGrain: React.FC = () => {
+  const frame = useCurrentFrame();
+  // Generate a pseudo-random SVG noise that shifts every frame
+  const seed = frame % 100;
+  return (
+    <AbsoluteFill
+      style={{
+        opacity: 0.025,
+        mixBlendMode: "overlay",
+        pointerEvents: "none",
+      }}
+    >
+      <svg width="100%" height="100%">
+        <filter id={`grain-${seed}`}>
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.65"
+            numOctaves={3}
+            seed={seed}
+            stitchTiles="stitch"
+          />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect
+          width="100%"
+          height="100%"
+          filter={`url(#grain-${seed})`}
+          opacity={1}
+        />
+      </svg>
+    </AbsoluteFill>
+  );
+};
+
+/* ── Glass milestone card ── */
+const MilestoneCard: React.FC<{
+  year: string;
+  label: string;
+  color: string;
+  progress: number;
+  frame: number;
+}> = ({ year, label, color, progress, frame }) => {
+  const translateY = interpolate(progress, [0, 1], [30, 0]);
+  const scale = interpolate(progress, [0, 1], [0.94, 1]);
+
+  // Subtle breathing glow on the year number
+  const glowPulse = interpolate(
+    Math.sin(frame * 0.04),
+    [-1, 1],
+    [0.4, 0.7],
+  );
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 320,
+        height: 220,
+        background: `linear-gradient(
+          165deg,
+          rgba(19, 19, 22, 0.85) 0%,
+          rgba(19, 19, 22, 0.55) 100%
+        )`,
+        backdropFilter: "blur(40px)",
+        WebkitBackdropFilter: "blur(40px)",
+        borderRadius: molt.radius.xl,
+        border: `1px solid ${molt.colors.border}`,
+        boxShadow: `
+          ${molt.shadows.card},
+          inset 0 1px 0 rgba(255, 255, 255, 0.04)
+        `,
+        opacity: progress,
+        transform: `translateY(${translateY}px) scale(${scale})`,
+      }}
+    >
+      {/* Big year number */}
+      <div
+        style={{
+          fontSize: 80,
+          fontWeight: 700,
+          fontFamily: molt.fonts.display,
+          color: color,
+          letterSpacing: "-0.04em",
+          lineHeight: 1,
+          textShadow: `0 0 40px ${color}${Math.round(glowPulse * 255)
+            .toString(16)
+            .padStart(2, "0")}`,
+        }}
+      >
+        {year}
+      </div>
+
+      {/* Label */}
+      <div
+        style={{
+          fontSize: 18,
+          fontWeight: 500,
+          fontFamily: molt.fonts.body,
+          color: molt.colors.textSecondary,
+          letterSpacing: "0.02em",
+          marginTop: 16,
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+};
 
 export const MoltScene6Timeline: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Title
-  const titleSpring = spring({ frame, fps, config: { damping: 14, stiffness: 70 } });
-  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
-
-  // Timeline line progress
-  const lineProgress = interpolate(frame, [25, 160], [0, 1], {
+  /* ── Entrance fade (0-15 frames) ── */
+  const entranceOpacity = interpolate(frame, [0, 15], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
   });
 
-  // Milestone springs
-  const mSprings = milestones.map((m) =>
-    spring({ frame: frame - m.delay, fps, config: { damping: 12, stiffness: 80 } })
+  /* ── Exit fade with scale-down (last 25 frames: 215-240) ── */
+  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+  const exitScale = interpolate(frame, [215, 240], [1, 0.97], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+
+  /* ── Title spring (high damping) ── */
+  const titleSpring = spring({
+    frame,
+    fps,
+    config: { damping: 26, stiffness: 150 },
+  });
+  const titleY = interpolate(titleSpring, [0, 1], [25, 0]);
+
+  /* ── Label "BUILDING FOR THE FUTURE" ── */
+  const labelOpacity = interpolate(frame, [0, 18], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const labelY = interpolate(frame, [0, 18], [12, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+
+  /* ── Milestone card springs (high damping) ── */
+  const cardSprings = milestones.map((m) =>
+    spring({
+      frame: Math.max(0, frame - m.delay),
+      fps,
+      config: { damping: 24, stiffness: 140 },
+    }),
   );
 
-  // Bottom text
-  const bottomSpring = spring({ frame: frame - 175, fps, config: { damping: 14 } });
-  const bottomY = interpolate(bottomSpring, [0, 1], [30, 0]);
-
-  // Exit
-  const exitOp = interpolate(frame, [215, 240], [1, 0], {
+  /* ── Timeline connecting line ── */
+  const lineProgress = interpolate(frame, [40, 155], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
   });
 
-  // Timeline dimensions
-  const tlLeft = 200;
-  const tlRight = 1720;
-  const tlY = 400;
-  const tlWidth = tlRight - tlLeft;
+  /* ── Bottom message spring ── */
+  const bottomSpring = spring({
+    frame: Math.max(0, frame - 170),
+    fps,
+    config: { damping: 24, stiffness: 130 },
+  });
+  const bottomY = interpolate(bottomSpring, [0, 1], [25, 0]);
+
+  /* ── Layout constants ── */
+  const cardGap = 60;
+  const cardWidth = 320;
+  const totalCardsWidth = cardWidth * 3 + cardGap * 2;
+  const cardsStartX = (1920 - totalCardsWidth) / 2;
+  const cardsCenterY = 480;
+
+  /* ── Timeline line position (connects card centers) ── */
+  const lineStartX = cardsStartX + cardWidth / 2;
+  const lineEndX = cardsStartX + totalCardsWidth - cardWidth / 2;
+  const lineWidth = lineEndX - lineStartX;
 
   return (
     <AbsoluteFill
       style={{
         background: molt.colors.bg,
-        opacity: exitOp,
+        opacity: entranceOpacity * exitOpacity,
+        transform: `scale(${exitScale})`,
       }}
     >
-      {/* Glow */}
+      {/* Subtle radial glow — centered, diffused */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 80% 50% at 50% 50%, ${molt.colors.goldGlow}, transparent)`,
+          background: `radial-gradient(
+            ellipse 60% 45% at 50% 48%,
+            ${molt.colors.goldGlow},
+            transparent 70%
+          )`,
         }}
       />
 
-      {/* Title */}
+      {/* ── Gold label ── */}
       <div
         style={{
           position: "absolute",
-          top: 60,
+          top: 140,
+          width: "100%",
+          textAlign: "center",
+          opacity: labelOpacity,
+          transform: `translateY(${labelY}px)`,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 22,
+            fontWeight: 600,
+            fontFamily: molt.fonts.body,
+            color: molt.colors.gold,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+          }}
+        >
+          Building for the Future
+        </span>
+      </div>
+
+      {/* ── Main headline ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 185,
           width: "100%",
           textAlign: "center",
           opacity: titleSpring,
@@ -101,30 +286,23 @@ export const MoltScene6Timeline: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 26,
-            fontWeight: 600,
-            color: molt.colors.gold,
-            fontFamily: molt.fonts.body,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
-          Building for the Future
-        </div>
-        <div
-          style={{
-            fontSize: 50,
-            fontWeight: 800,
-            color: molt.colors.text,
+            fontSize: 72,
+            fontWeight: 700,
             fontFamily: molt.fonts.display,
+            color: molt.colors.text,
             letterSpacing: "-0.03em",
+            lineHeight: 1.15,
           }}
         >
           This is{" "}
           <span
             style={{
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+              background: `linear-gradient(
+                135deg,
+                ${molt.colors.goldLight} 0%,
+                ${molt.colors.gold} 50%,
+                ${molt.colors.goldDark} 100%
+              )`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -134,162 +312,95 @@ export const MoltScene6Timeline: React.FC = () => {
         </div>
       </div>
 
-      {/* Timeline base line */}
+      {/* ── Horizontal timeline line ── */}
+      {/* Track (dim base) */}
       <div
         style={{
           position: "absolute",
-          left: tlLeft,
-          top: tlY,
-          width: tlWidth * lineProgress,
-          height: 4,
-          background: `linear-gradient(90deg, ${molt.colors.goldDark}, ${molt.colors.gold}, ${molt.colors.goldLight})`,
-          borderRadius: 2,
-          boxShadow: `0 0 20px ${molt.colors.goldGlow}`,
-        }}
-      />
-      {/* Base line track */}
-      <div
-        style={{
-          position: "absolute",
-          left: tlLeft,
-          top: tlY,
-          width: tlWidth,
-          height: 4,
+          left: lineStartX,
+          top: cardsCenterY + 110 + 14,
+          width: lineWidth,
+          height: 2,
           background: molt.colors.border,
-          borderRadius: 2,
-          zIndex: -1,
+          borderRadius: 1,
+        }}
+      />
+      {/* Animated gold line */}
+      <div
+        style={{
+          position: "absolute",
+          left: lineStartX,
+          top: cardsCenterY + 110 + 14,
+          width: lineWidth * lineProgress,
+          height: 2,
+          background: `linear-gradient(
+            90deg,
+            ${molt.colors.goldDark},
+            ${molt.colors.gold},
+            ${molt.colors.goldLight}
+          )`,
+          borderRadius: 1,
+          boxShadow: `0 0 16px ${molt.colors.goldGlowStrong}`,
         }}
       />
 
-      {/* Milestones */}
+      {/* ── Three milestone dots on the line ── */}
       {milestones.map((m, i) => {
-        const mX = tlLeft + (tlWidth / 2) * i;
-        const nScale = interpolate(mSprings[i], [0, 1], [0.5, 1]);
-        const nY = interpolate(mSprings[i], [0, 1], [20, 0]);
-
-        // Network visualization for each milestone
-        const nodePositions: { x: number; y: number }[] = [];
-        for (let n = 0; n < m.nodes; n++) {
-          const angle = (n / m.nodes) * Math.PI * 2 + frame * 0.003;
-          const radius = 30 + (n % 3) * 20 + Math.sin(n * 1.5) * 10;
-          nodePositions.push({
-            x: Math.cos(angle) * radius,
-            y: Math.sin(angle) * radius,
-          });
-        }
-
+        const dotX = lineStartX + (lineWidth / 2) * i;
+        const dotScale = interpolate(cardSprings[i], [0, 1], [0, 1]);
         return (
-          <div key={i}>
-            {/* Milestone dot on timeline */}
-            <div
-              style={{
-                position: "absolute",
-                left: mX - 10,
-                top: tlY - 8,
-                width: 20,
-                height: 20,
-                borderRadius: molt.radius.full,
-                background: mSprings[i] > 0.5 ? m.color : molt.colors.border,
-                border: `3px solid ${molt.colors.bg}`,
-                boxShadow: mSprings[i] > 0.5 ? `0 0 15px ${m.color}50` : "none",
-                opacity: mSprings[i],
-                zIndex: 2,
-              }}
+          <div
+            key={`dot-${i}`}
+            style={{
+              position: "absolute",
+              left: dotX - 6,
+              top: cardsCenterY + 110 + 14 - 6,
+              width: 12,
+              height: 12,
+              borderRadius: molt.radius.full,
+              background: cardSprings[i] > 0.3 ? m.color : molt.colors.border,
+              boxShadow:
+                cardSprings[i] > 0.3
+                  ? `0 0 12px ${m.color}80`
+                  : "none",
+              transform: `scale(${dotScale})`,
+              zIndex: 3,
+            }}
+          />
+        );
+      })}
+
+      {/* ── Milestone cards ── */}
+      {milestones.map((m, i) => {
+        const cardX = cardsStartX + i * (cardWidth + cardGap);
+        return (
+          <div
+            key={`card-${i}`}
+            style={{
+              position: "absolute",
+              left: cardX,
+              top: cardsCenterY - 110,
+              width: cardWidth,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <MilestoneCard
+              year={m.year}
+              label={m.label}
+              color={m.color}
+              progress={cardSprings[i]}
+              frame={frame}
             />
-
-            {/* Year + label below */}
-            <div
-              style={{
-                position: "absolute",
-                left: mX,
-                top: tlY + 30,
-                transform: `translateX(-50%) translateY(${nY}px)`,
-                opacity: mSprings[i],
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 42,
-                  fontWeight: 800,
-                  color: m.color,
-                  fontFamily: molt.fonts.display,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {m.year}
-              </div>
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: molt.colors.textSecondary,
-                  fontFamily: molt.fonts.body,
-                  marginTop: 4,
-                }}
-              >
-                {m.label}
-              </div>
-            </div>
-
-            {/* Network visualization above */}
-            <div
-              style={{
-                position: "absolute",
-                left: mX,
-                top: tlY - 150,
-                transform: `translate(-50%, 0) scale(${nScale})`,
-                opacity: mSprings[i],
-                width: 200,
-                height: 200,
-              }}
-            >
-              <svg width="200" height="200" viewBox="-100 -100 200 200">
-                {/* Connections */}
-                {nodePositions.map((pos, ni) =>
-                  nodePositions.slice(ni + 1).map((pos2, ni2) => {
-                    const dist = Math.sqrt((pos.x - pos2.x) ** 2 + (pos.y - pos2.y) ** 2);
-                    if (dist < 60) {
-                      return (
-                        <line
-                          key={`${ni}-${ni2}`}
-                          x1={pos.x}
-                          y1={pos.y}
-                          x2={pos2.x}
-                          y2={pos2.y}
-                          stroke={m.color}
-                          strokeWidth={1}
-                          opacity={0.25}
-                        />
-                      );
-                    }
-                    return null;
-                  })
-                )}
-                {/* Nodes */}
-                {nodePositions.map((pos, ni) => (
-                  <circle
-                    key={ni}
-                    cx={pos.x}
-                    cy={pos.y}
-                    r={4}
-                    fill={m.color}
-                    opacity={0.7 + Math.sin(frame * 0.05 + ni) * 0.3}
-                  />
-                ))}
-                {/* Center hub */}
-                <circle cx={0} cy={0} r={8} fill={m.color} opacity={0.9} />
-              </svg>
-            </div>
           </div>
         );
       })}
 
-      {/* Bottom message */}
+      {/* ── Bottom message ── */}
       <div
         style={{
           position: "absolute",
-          bottom: 80,
+          bottom: 120,
           width: "100%",
           textAlign: "center",
           opacity: bottomSpring,
@@ -298,17 +409,23 @@ export const MoltScene6Timeline: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 34,
-            fontWeight: 700,
-            color: molt.colors.text,
+            fontSize: 32,
+            fontWeight: 600,
             fontFamily: molt.fonts.display,
+            color: molt.colors.text,
             letterSpacing: "-0.02em",
+            lineHeight: 1.4,
           }}
         >
           The platforms that establish themselves early{" "}
           <span
             style={{
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+              background: `linear-gradient(
+                135deg,
+                ${molt.colors.goldLight} 0%,
+                ${molt.colors.gold} 60%,
+                ${molt.colors.goldDark} 100%
+              )`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -317,6 +434,9 @@ export const MoltScene6Timeline: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {/* ── Film grain overlay ── */}
+      <FilmGrain />
     </AbsoluteFill>
   );
 };

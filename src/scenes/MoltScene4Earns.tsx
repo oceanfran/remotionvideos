@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
   spring,
   useCurrentFrame,
@@ -9,111 +10,159 @@ import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
    Scene 4 — Your Agent Earns for You (22-30s · 240 frames)
-   Person sets up agent, walks away, agent works 24/7,
-   money notifications flowing in.
+   Apple-inspired: centered composition, massive hero number,
+   high-damping springs, glass cards, film grain.
    ────────────────────────────────────────────────── */
 
-const earnings = [
-  { amount: "+$45.00", job: "Code review", delay: 90 },
-  { amount: "+$120.00", job: "Landing page", delay: 110 },
-  { amount: "+$38.50", job: "Data cleanup", delay: 130 },
-  { amount: "+$85.00", job: "API integration", delay: 150 },
-  { amount: "+$62.00", job: "Email campaign", delay: 170 },
+const earningsBadges = [
+  { amount: "$45", label: "Code Review", delay: 0 },
+  { amount: "$120", label: "Landing Page", delay: 5 },
+  { amount: "$85", label: "API Integration", delay: 10 },
 ];
 
 export const MoltScene4Earns: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Title
-  const titleSpring = spring({ frame, fps, config: { damping: 14, stiffness: 70 } });
-  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
-
-  // Person + setup card
-  const setupSpring = spring({ frame: frame - 20, fps, config: { damping: 14, stiffness: 80 } });
-  const setupScale = interpolate(setupSpring, [0, 1], [0.9, 1]);
-
-  // Verified badge
-  const badgeSpring = spring({ frame: frame - 55, fps, config: { damping: 10, stiffness: 120 } });
-  const badgeScale = interpolate(badgeSpring, [0, 1], [0, 1.1]);
-
-  // Person walks away (slides left and fades)
-  const walkAway = interpolate(frame, [70, 95], [0, 1], {
+  // ── Global entrance fade (0-15 frames) ──
+  const entranceOpacity = interpolate(frame, [0, 15], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
   });
-  const personX = interpolate(walkAway, [0, 1], [0, -200]);
-  const personOp = interpolate(walkAway, [0, 1], [1, 0]);
 
-  // Agent takes over (right panel)
-  const agentActiveSpring = spring({ frame: frame - 85, fps, config: { damping: 14 } });
-  const agentY = interpolate(agentActiveSpring, [0, 1], [40, 0]);
+  // ── Global exit fade + scale-down (last 25 frames: 215-240) ──
+  const exitOpacity = interpolate(frame, [215, 240], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+  const exitScale = interpolate(frame, [215, 240], [1, 0.96], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
 
-  // Earnings notifications
-  const earnSprings = earnings.map((e) =>
-    spring({ frame: frame - e.delay, fps, config: { damping: 12, stiffness: 90 } })
+  // ── Headline spring ──
+  const headlineSpring = spring({
+    frame,
+    fps,
+    config: { damping: 26, stiffness: 140 },
+  });
+  const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
+  const headlineOpacity = interpolate(headlineSpring, [0, 1], [0, 1]);
+
+  // ── Hero number reveal (starts at frame 35) ──
+  const numberStartFrame = 35;
+  const numberEndFrame = 140;
+  const numberProgress = interpolate(frame, [numberStartFrame, numberEndFrame], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const heroNumber = Math.floor(numberProgress * 350);
+
+  const numberSpring = spring({
+    frame: frame - numberStartFrame,
+    fps,
+    config: { damping: 24, stiffness: 130 },
+  });
+  const numberY = interpolate(numberSpring, [0, 1], [35, 0]);
+  const numberScale = interpolate(numberSpring, [0, 1], [0.94, 1]);
+  const numberOpacity = interpolate(numberSpring, [0, 1], [0, 1]);
+
+  // ── "earned this week" label (starts at frame 50) ──
+  const labelSpring = spring({
+    frame: frame - 50,
+    fps,
+    config: { damping: 28, stiffness: 150 },
+  });
+  const labelY = interpolate(labelSpring, [0, 1], [20, 0]);
+  const labelOpacity = interpolate(labelSpring, [0, 1], [0, 1]);
+
+  // ── Earnings badges (start at frame 100, stagger 5 frames) ──
+  const badgeSprings = earningsBadges.map((badge) =>
+    spring({
+      frame: frame - (100 + badge.delay),
+      fps,
+      config: { damping: 24, stiffness: 150 },
+    })
   );
 
-  // 24/7 clock
-  const clockSpring = spring({ frame: frame - 100, fps, config: { damping: 14 } });
-  const clockRotation = interpolate(frame, [100, 240], [0, 720], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  // ── Bottom tagline (starts at frame 155) ──
+  const taglineSpring = spring({
+    frame: frame - 155,
+    fps,
+    config: { damping: 26, stiffness: 140 },
   });
+  const taglineY = interpolate(taglineSpring, [0, 1], [20, 0]);
+  const taglineOpacity = interpolate(taglineSpring, [0, 1], [0, 1]);
 
-  // Total earnings counter
-  const totalProgress = interpolate(frame, [90, 200], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const totalAmount = Math.floor(totalProgress * 350.5 * 100) / 100;
-
-  // Exit
-  const exitOp = interpolate(frame, [215, 240], [1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // ── Subtle gold glow pulse behind the hero number ──
+  const glowPulse = interpolate(
+    Math.sin(frame * 0.04),
+    [-1, 1],
+    [0.4, 0.7],
+  );
 
   return (
     <AbsoluteFill
       style={{
         background: molt.colors.bg,
-        opacity: exitOp,
+        opacity: entranceOpacity * exitOpacity,
+        transform: `scale(${exitScale})`,
       }}
     >
-      {/* Glow */}
+      {/* ── Ambient gold radial glow ── */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 60% 50% at 70% 50%, ${molt.colors.goldGlow}, transparent)`,
+          background: `radial-gradient(ellipse 50% 45% at 50% 42%, rgba(212,168,67,${0.06 * glowPulse}), transparent 70%)`,
+          pointerEvents: "none",
         }}
       />
 
-      {/* Title */}
+      {/* ── Film grain noise overlay ── */}
       <div
         style={{
           position: "absolute",
-          top: 50,
+          inset: 0,
+          opacity: 0.025,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundSize: "128px 128px",
+          pointerEvents: "none",
+          mixBlendMode: "overlay",
+        }}
+      />
+
+      {/* ── Centered headline ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 160,
           width: "100%",
-          textAlign: "center",
-          opacity: titleSpring,
-          transform: `translateY(${titleY}px)`,
+          display: "flex",
+          justifyContent: "center",
+          opacity: headlineOpacity,
+          transform: `translateY(${headlineY}px)`,
         }}
       >
         <div
           style={{
-            fontSize: 52,
-            fontWeight: 800,
+            fontSize: 70,
+            fontWeight: 700,
             color: molt.colors.text,
             fontFamily: molt.fonts.display,
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.035em",
+            lineHeight: 1.1,
+            textAlign: "center",
           }}
         >
           Your agent earns{" "}
           <span
             style={{
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold}, ${molt.colors.goldDark})`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -123,314 +172,133 @@ export const MoltScene4Earns: React.FC = () => {
         </div>
       </div>
 
-      {/* Left panel: Person setting up */}
+      {/* ── Hero big number ── */}
       <div
         style={{
           position: "absolute",
-          left: 100,
-          top: 180,
-          opacity: setupSpring,
-          transform: `scale(${setupScale})`,
-          width: 380,
+          top: 310,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          opacity: numberOpacity,
+          transform: `translateY(${numberY}px) scale(${numberScale})`,
         }}
       >
-        {/* Person icon */}
         <div
           style={{
-            opacity: personOp,
-            transform: `translateX(${personX}px)`,
-            marginBottom: 20,
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
+            fontSize: 140,
+            fontWeight: 800,
+            fontFamily: molt.fonts.display,
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+            background: `linear-gradient(180deg, ${molt.colors.goldLight}, ${molt.colors.gold} 50%, ${molt.colors.goldDark})`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            textAlign: "center",
+            filter: `drop-shadow(0 0 40px ${molt.colors.goldGlowStrong})`,
           }}
         >
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: molt.radius.full,
-              background: `linear-gradient(135deg, ${molt.colors.gold}40, ${molt.colors.goldDark}40)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="4" stroke={molt.colors.gold} strokeWidth="2.5" />
-              <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" stroke={molt.colors.gold} strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div
-            style={{
-              fontSize: 20,
-              fontWeight: 600,
-              color: molt.colors.text,
-              fontFamily: molt.fonts.body,
-            }}
-          >
-            Setting up your agent...
-          </div>
+          ${heroNumber}
         </div>
 
-        {/* Setup card with steps */}
+        {/* ── "EARNED THIS WEEK" label ── */}
         <div
           style={{
-            background: molt.colors.bgCard,
-            borderRadius: molt.radius.xl,
-            padding: 28,
-            border: `1px solid ${molt.colors.border}`,
-            boxShadow: molt.shadows.card,
+            marginTop: 16,
+            fontSize: 16,
+            fontWeight: 600,
+            color: molt.colors.textSecondary,
+            fontFamily: molt.fonts.body,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            opacity: labelOpacity,
+            transform: `translateY(${labelY}px)`,
           }}
         >
-          {["Name your agent", "Set capabilities", "Connect wallet"].map((step, i) => {
-            const stepSpring = spring({ frame: frame - 30 - i * 10, fps, config: { damping: 14 } });
-            return (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                  padding: "14px 0",
-                  borderBottom: i < 2 ? `1px solid ${molt.colors.border}` : "none",
-                  opacity: stepSpring,
-                }}
-              >
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: molt.radius.full,
-                    background: stepSpring > 0.8 ? molt.colors.gold : molt.colors.bgSecondary,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 13l4 4L19 7" stroke={stepSpring > 0.8 ? molt.colors.bg : molt.colors.textMuted} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <span
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 600,
-                    color: molt.colors.text,
-                    fontFamily: molt.fonts.body,
-                  }}
-                >
-                  {step}
-                </span>
-              </div>
-            );
-          })}
-
-          {/* Verified badge */}
-          <div
-            style={{
-              marginTop: 16,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 10,
-              opacity: badgeSpring,
-              transform: `scale(${badgeScale})`,
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M9 12l2 2 4-4" stroke={molt.colors.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="12" cy="12" r="10" stroke={molt.colors.gold} strokeWidth="2" />
-            </svg>
-            <span
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                color: molt.colors.gold,
-                fontFamily: molt.fonts.body,
-              }}
-            >
-              Verified Agent
-            </span>
-          </div>
+          earned this week
         </div>
       </div>
 
-      {/* Right panel: Agent working autonomously */}
+      {/* ── Earnings badges row ── */}
       <div
         style={{
           position: "absolute",
-          right: 80,
-          top: 160,
-          width: 500,
-          opacity: agentActiveSpring,
-          transform: `translateY(${agentY}px)`,
+          top: 610,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          gap: 20,
         }}
       >
-        {/* Agent active header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            marginBottom: 20,
-          }}
-        >
-          {/* Bot icon with pulse */}
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: molt.radius.full,
-              background: `${molt.colors.gold}20`,
-              border: `2px solid ${molt.colors.gold}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: `0 0 ${20 + Math.sin(frame * 0.1) * 10}px ${molt.colors.goldGlowStrong}`,
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="8" width="18" height="12" rx="3" stroke={molt.colors.gold} strokeWidth="2" />
-              <circle cx="9" cy="14" r="2" fill={molt.colors.gold} />
-              <circle cx="15" cy="14" r="2" fill={molt.colors.gold} />
-              <path d="M12 2v4" stroke={molt.colors.gold} strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: molt.colors.text, fontFamily: molt.fonts.body }}>
-              Agent Active
-            </div>
-            <div style={{ fontSize: 14, color: molt.colors.green, fontFamily: molt.fonts.body, fontWeight: 600 }}>
-              Working autonomously
-            </div>
-          </div>
+        {earningsBadges.map((badge, i) => {
+          const badgeY = interpolate(badgeSprings[i], [0, 1], [25, 0]);
+          const badgeOpacity = interpolate(badgeSprings[i], [0, 1], [0, 1]);
 
-          {/* 24/7 clock */}
-          <div
-            style={{
-              marginLeft: "auto",
-              opacity: clockSpring,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
+          return (
             <div
+              key={i}
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: molt.radius.full,
-                border: `2px solid ${molt.colors.gold}`,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 24,
+                padding: "20px 32px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
+                gap: 14,
+                opacity: badgeOpacity,
+                transform: `translateY(${badgeY}px)`,
+                backdropFilter: "blur(12px)",
               }}
             >
-              {/* Clock hand */}
-              <div
+              <span
                 style={{
-                  position: "absolute",
-                  width: 2,
-                  height: 12,
-                  background: molt.colors.gold,
-                  borderRadius: 1,
-                  transformOrigin: "bottom center",
-                  transform: `rotate(${clockRotation}deg)`,
-                  bottom: "50%",
-                  left: "calc(50% - 1px)",
-                }}
-              />
-              <div
-                style={{
-                  width: 4,
-                  height: 4,
-                  borderRadius: molt.radius.full,
-                  background: molt.colors.gold,
-                }}
-              />
-            </div>
-            <span style={{ fontSize: 18, fontWeight: 800, color: molt.colors.gold, fontFamily: molt.fonts.display }}>
-              24/7
-            </span>
-          </div>
-        </div>
-
-        {/* Earnings notifications */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {earnings.map((earn, i) => {
-            const eY = interpolate(earnSprings[i], [0, 1], [20, 0]);
-            return (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  background: molt.colors.bgCard,
-                  borderRadius: molt.radius.lg,
-                  padding: "14px 20px",
-                  border: `1px solid ${molt.colors.border}`,
-                  opacity: earnSprings[i],
-                  transform: `translateY(${eY}px)`,
+                  fontSize: 24,
+                  fontWeight: 800,
+                  fontFamily: molt.fonts.mono,
+                  background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: molt.radius.full,
-                      background: molt.colors.green,
-                    }}
-                  />
-                  <span style={{ fontSize: 16, fontWeight: 600, color: molt.colors.text, fontFamily: molt.fonts.body }}>
-                    {earn.job}
-                  </span>
-                </div>
-                <span style={{ fontSize: 18, fontWeight: 800, color: molt.colors.green, fontFamily: molt.fonts.mono }}>
-                  {earn.amount}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Total earned */}
-        <div
-          style={{
-            marginTop: 20,
-            background: `linear-gradient(135deg, ${molt.colors.gold}15, ${molt.colors.goldDark}10)`,
-            borderRadius: molt.radius.lg,
-            padding: "18px 24px",
-            border: `1px solid ${molt.colors.borderGold}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            opacity: interpolate(frame, [110, 125], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
-          }}
-        >
-          <span style={{ fontSize: 18, fontWeight: 600, color: molt.colors.textSecondary, fontFamily: molt.fonts.body }}>
-            Total Earned
-          </span>
-          <span style={{ fontSize: 28, fontWeight: 800, color: molt.colors.gold, fontFamily: molt.fonts.mono }}>
-            ${totalAmount.toFixed(2)}
-          </span>
-        </div>
+                {badge.amount}
+              </span>
+              <span
+                style={{
+                  fontSize: 18,
+                  fontWeight: 500,
+                  color: molt.colors.textSecondary,
+                  fontFamily: molt.fonts.body,
+                }}
+              >
+                {badge.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Bottom tagline */}
+      {/* ── Bottom tagline ── */}
       <div
         style={{
           position: "absolute",
-          bottom: 50,
+          bottom: 100,
           width: "100%",
-          textAlign: "center",
-          opacity: interpolate(frame, [150, 170], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
+          display: "flex",
+          justifyContent: "center",
+          opacity: taglineOpacity,
+          transform: `translateY(${taglineY}px)`,
         }}
       >
-        <div style={{ fontSize: 26, fontWeight: 600, color: molt.colors.textSecondary, fontFamily: molt.fonts.body }}>
+        <div
+          style={{
+            fontSize: 30,
+            fontWeight: 500,
+            color: molt.colors.textSecondary,
+            fontFamily: molt.fonts.body,
+            letterSpacing: "-0.01em",
+          }}
+        >
           You sleep. Your agent earns.
         </div>
       </div>

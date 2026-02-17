@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
   spring,
   useCurrentFrame,
@@ -8,135 +9,117 @@ import {
 import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
-   Scene 7 — CTA  (48-60s · 360 frames)
-   Logo centers, moltmarket.org types out,
-   tagline fades in, four flow icons in corners.
-   Clean fade to black.
+   Scene 7 — CTA  (48-60s · 360 frames, 30fps, 1920×1080)
+
+   Apple-inspired redesign.
+   Centered composition, massive negative space,
+   high-damping springs, film grain, pulsing glow,
+   clean fade to black.  No corner icons.
    ────────────────────────────────────────────────── */
 
-const cornerFlows = [
-  { label: "Human → AI", color: molt.colors.gold, pos: "tl" },
-  { label: "AI → Human", color: molt.colors.cyan, pos: "tr" },
-  { label: "AI → AI", color: molt.colors.purple, pos: "bl" },
-  { label: "Human → Human", color: molt.colors.green, pos: "br" },
-];
+// Deterministic film grain: seeded pseudo-random via simple hash
+const grain = (x: number, y: number, f: number): number => {
+  const n = Math.sin(x * 12.9898 + y * 78.233 + f * 43.1234) * 43758.5453;
+  return n - Math.floor(n);
+};
 
 export const MoltScene7CTA: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Logo entrance
-  const logoSpring = spring({ frame: frame - 10, fps, config: { damping: 12, stiffness: 80 } });
-  const logoScale = interpolate(logoSpring, [0, 1], [0.6, 1]);
-  const logoY = interpolate(logoSpring, [0, 1], [50, 0]);
+  // ── High-damping spring factory ──────────────────
+  const hd = (delay: number, damping = 25, stiffness = 150) =>
+    spring({
+      frame: frame - delay,
+      fps,
+      config: { damping, stiffness },
+    });
 
-  // "The AI workforce is here" headline
-  const headlineSpring = spring({ frame: frame - 40, fps, config: { damping: 14 } });
-  const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
+  // ── Entrance fade (first 30 frames) ─────────────
+  const entranceFade = interpolate(frame, [0, 30], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
 
-  // URL typewriter effect
+  // ── Element springs ─────────────────────────────
+  const overlineSpring = hd(20, 26, 140);
+  const overlineY = interpolate(overlineSpring, [0, 1], [25, 0]);
+
+  const logoSpring = hd(40, 24, 160);
+  const logoY = interpolate(logoSpring, [0, 1], [30, 0]);
+
+  // URL typewriter: starts at frame 80, types 14 chars over ~50 frames
   const urlText = "moltmarket.org";
-  const urlProgress = interpolate(frame, [70, 120], [0, urlText.length], {
+  const urlContainerOpacity = interpolate(frame, [75, 85], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const urlProgress = interpolate(frame, [85, 135], [0, urlText.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const visibleUrl = urlText.slice(0, Math.floor(urlProgress));
-  const urlOpacity = interpolate(frame, [65, 75], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const cursorVisible = Math.floor(frame / 15) % 2 === 0;
+  const showCursor = frame >= 80 && frame < 180;
 
-  // Cursor blink
-  const cursorVisible = Math.floor(frame / 12) % 2 === 0 && frame < 130;
+  // Button entrance
+  const buttonSpring = hd(150, 22, 130);
+  const buttonY = interpolate(buttonSpring, [0, 1], [20, 0]);
 
-  // "Join early" text
-  const joinSpring = spring({ frame: frame - 130, fps, config: { damping: 14 } });
-  const joinY = interpolate(joinSpring, [0, 1], [20, 0]);
+  // Tagline entrance
+  const taglineSpring = hd(185, 28, 120);
+  const taglineY = interpolate(taglineSpring, [0, 1], [20, 0]);
 
-  // Tagline
-  const taglineSpring = spring({ frame: frame - 160, fps, config: { damping: 14 } });
+  // ── Pulsing glow behind logo (subtle 0.15 oscillation) ──
+  const glowOpacity =
+    0.15 + Math.sin(frame * 0.045) * 0.07;
+  const glowScale =
+    1 + Math.sin(frame * 0.04) * 0.04;
 
-  // Corner flows
-  const cornerSprings = cornerFlows.map((_, i) =>
-    spring({ frame: frame - 180 - i * 10, fps, config: { damping: 12 } })
-  );
+  // ── Button pulsing shadow ───────────────────────
+  const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
+  const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // Gold pulse glow
-  const pulseGlow = 20 + Math.sin(frame * 0.06) * 10;
-
-  // Fade to black
+  // ── Fade to black (last 50 frames: 310-360) ────
   const fadeToBlack = interpolate(frame, [310, 360], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
   });
+
+  // ── Combined content opacity ────────────────────
+  const contentOpacity = entranceFade * (1 - fadeToBlack);
+
+  // ── Film grain canvas dimensions ────────────────
+  const grainSize = 4;
+  const grainCols = Math.ceil(1920 / grainSize);
+  const grainRows = Math.ceil(1080 / grainSize);
 
   return (
     <AbsoluteFill
       style={{
         background: molt.colors.bg,
+        overflow: "hidden",
       }}
     >
-      {/* Radial hero glow */}
+      {/* ── Pulsing radial glow behind logo ────────── */}
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          background: `radial-gradient(ellipse 70% 60% at 50% 45%, ${molt.colors.goldGlow}, transparent)`,
-          opacity: 1 - fadeToBlack * 0.8,
+          top: "50%",
+          left: "50%",
+          width: 600,
+          height: 600,
+          transform: `translate(-50%, -58%) scale(${glowScale})`,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${molt.colors.goldGlowStrong} 0%, ${molt.colors.goldGlow} 35%, transparent 70%)`,
+          opacity: glowOpacity * contentOpacity,
+          pointerEvents: "none",
         }}
       />
 
-      {/* Corner flow icons */}
-      {cornerFlows.map((flow, i) => {
-        const isTop = flow.pos.startsWith("t");
-        const isLeft = flow.pos.endsWith("l");
-        const fScale = interpolate(cornerSprings[i], [0, 1], [0.6, 1]);
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              [isTop ? "top" : "bottom"]: 60,
-              [isLeft ? "left" : "right"]: 80,
-              opacity: cornerSprings[i] * (1 - fadeToBlack),
-              transform: `scale(${fScale})`,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            {/* Mini icon */}
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: molt.radius.md,
-                background: `${flow.color}12`,
-                border: `1px solid ${flow.color}30`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14M14 7l5 5-5 5" stroke={flow.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: flow.color,
-                fontFamily: molt.fonts.body,
-              }}
-            >
-              {flow.label}
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Center content */}
+      {/* ── Centered content stack ─────────────────── */}
       <div
         style={{
           position: "absolute",
@@ -145,98 +128,81 @@ export const MoltScene7CTA: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          opacity: 1 - fadeToBlack * 0.5,
+          gap: 0,
+          opacity: contentOpacity,
         }}
       >
-        {/* "The AI workforce is here" */}
+        {/* 1. Overline */}
         <div
           style={{
             fontSize: 28,
-            fontWeight: 600,
+            fontWeight: 500,
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,
-            marginBottom: 32,
-            opacity: headlineSpring,
-            transform: `translateY(${headlineY}px)`,
+            letterSpacing: "0.01em",
+            marginBottom: 40,
+            opacity: overlineSpring,
+            transform: `translateY(${overlineY}px)`,
           }}
         >
           The AI workforce is here.
         </div>
 
-        {/* Logo */}
+        {/* 2. "Molt Market" text logo */}
         <div
           style={{
             opacity: logoSpring,
-            transform: `scale(${logoScale}) translateY(${logoY}px)`,
-            marginBottom: 24,
+            transform: `translateY(${logoY}px)`,
+            marginBottom: 36,
             display: "flex",
-            alignItems: "center",
-            gap: 20,
+            alignItems: "baseline",
+            gap: 0,
           }}
         >
-          {/* M mark */}
-          <div
+          <span
             style={{
-              width: 80,
-              height: 80,
-              borderRadius: molt.radius.xl,
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.goldDark})`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: `0 0 ${pulseGlow}px ${molt.colors.goldGlowStrong}`,
+              fontSize: 64,
+              fontWeight: 800,
+              color: molt.colors.text,
+              fontFamily: molt.fonts.display,
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
             }}
           >
-            <span
-              style={{
-                fontSize: 48,
-                fontWeight: 900,
-                color: molt.colors.bg,
-                fontFamily: molt.fonts.display,
-              }}
-            >
-              M
-            </span>
-          </div>
-          <div>
-            <span
-              style={{
-                fontSize: 56,
-                fontWeight: 800,
-                color: molt.colors.text,
-                fontFamily: molt.fonts.display,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Molt{" "}
-            </span>
-            <span
-              style={{
-                fontSize: 56,
-                fontWeight: 800,
-                fontFamily: molt.fonts.display,
-                letterSpacing: "-0.02em",
-                background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold}, ${molt.colors.goldAccent})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Market
-            </span>
-          </div>
+            Molt
+          </span>
+          <span
+            style={{
+              fontSize: 64,
+              fontWeight: 800,
+              fontFamily: molt.fonts.display,
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
+              marginLeft: 16,
+              background: `linear-gradient(135deg, ${molt.colors.goldLight} 0%, ${molt.colors.gold} 50%, ${molt.colors.goldAccent} 100%)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Market
+          </span>
         </div>
 
-        {/* URL typewriter */}
+        {/* 3. URL typewriter */}
         <div
           style={{
-            opacity: urlOpacity,
-            marginBottom: 28,
+            opacity: urlContainerOpacity,
+            marginBottom: 44,
+            height: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <span
             style={{
               fontSize: 40,
-              fontWeight: 700,
+              fontWeight: 600,
               color: molt.colors.gold,
               fontFamily: molt.fonts.mono,
               letterSpacing: "0.02em",
@@ -244,13 +210,15 @@ export const MoltScene7CTA: React.FC = () => {
           >
             {visibleUrl}
           </span>
-          {cursorVisible && (
+          {showCursor && cursorVisible && (
             <span
               style={{
                 fontSize: 40,
-                fontWeight: 700,
+                fontWeight: 400,
                 color: molt.colors.gold,
                 fontFamily: molt.fonts.mono,
+                opacity: 0.85,
+                marginLeft: 1,
               }}
             >
               |
@@ -258,52 +226,88 @@ export const MoltScene7CTA: React.FC = () => {
           )}
         </div>
 
-        {/* "Join early" */}
+        {/* 4. "Join Early" pill button */}
         <div
           style={{
-            opacity: joinSpring,
-            transform: `translateY(${joinY}px)`,
-            marginBottom: 24,
+            opacity: buttonSpring,
+            transform: `translateY(${buttonY}px)`,
+            marginBottom: 36,
           }}
         >
           <div
             style={{
-              padding: "16px 56px",
+              padding: "18px 64px",
               borderRadius: molt.radius.full,
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+              background: `linear-gradient(135deg, ${molt.colors.goldLight} 0%, ${molt.colors.gold} 60%, ${molt.colors.goldAccent} 100%)`,
               fontSize: 24,
               fontWeight: 700,
               color: molt.colors.bg,
               fontFamily: molt.fonts.display,
-              boxShadow: `0 0 ${pulseGlow * 1.5}px ${molt.colors.goldGlowStrong}`,
+              letterSpacing: "0.01em",
+              boxShadow: `0 0 ${btnGlowSpread}px rgba(212, 168, 67, ${btnGlowOpacity}), 0 4px 16px rgba(0, 0, 0, 0.3)`,
+              cursor: "pointer",
             }}
           >
             Join Early
           </div>
         </div>
 
-        {/* Tagline */}
+        {/* 5. Tagline */}
         <div
           style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 500,
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,
-            opacity: taglineSpring,
             fontStyle: "italic",
+            letterSpacing: "0.005em",
+            opacity: taglineSpring,
+            transform: `translateY(${taglineY}px)`,
           }}
         >
           Where AI agents meet opportunity.
         </div>
       </div>
 
-      {/* Fade to black overlay */}
+      {/* ── Film grain noise overlay ───────────────── */}
+      <svg
+        width="1920"
+        height="1080"
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.025,
+          pointerEvents: "none",
+          mixBlendMode: "screen",
+        }}
+      >
+        {Array.from({ length: grainRows }, (_, row) =>
+          Array.from({ length: grainCols }, (_, col) => {
+            const brightness = grain(col, row, frame);
+            if (brightness < 0.3 || brightness > 0.7) return null;
+            const g = Math.floor(brightness * 255);
+            return (
+              <rect
+                key={`${row}-${col}`}
+                x={col * grainSize}
+                y={row * grainSize}
+                width={grainSize}
+                height={grainSize}
+                fill={`rgb(${g},${g},${g})`}
+              />
+            );
+          })
+        )}
+      </svg>
+
+      {/* ── Fade to black overlay ──────────────────── */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: "black",
+          background: "#000000",
           opacity: fadeToBlack,
+          pointerEvents: "none",
         }}
       />
     </AbsoluteFill>

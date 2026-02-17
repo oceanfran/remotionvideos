@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
   spring,
   useCurrentFrame,
@@ -9,244 +10,214 @@ import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
    Scene 1 — The World Right Now  (0-6s · 180 frames)
-   Animated network of glowing AI-agent nodes
-   representing millions already running worldwide.
+   Apple-style: massive centered text, ambient floating
+   orbs in background, cinematic scale-down entrance.
    ────────────────────────────────────────────────── */
 
-interface NodeData {
-  x: number;
-  y: number;
-  icon: string;
-  delay: number;
-  size: number;
-}
-
-const nodes: NodeData[] = [
-  { x: 280, y: 200, icon: "code", delay: 0, size: 48 },
-  { x: 820, y: 150, icon: "email", delay: 4, size: 44 },
-  { x: 1400, y: 280, icon: "data", delay: 8, size: 50 },
-  { x: 1650, y: 520, icon: "design", delay: 12, size: 46 },
-  { x: 350, y: 600, icon: "code", delay: 6, size: 42 },
-  { x: 960, y: 480, icon: "email", delay: 10, size: 48 },
-  { x: 1200, y: 650, icon: "data", delay: 14, size: 44 },
-  { x: 550, y: 380, icon: "design", delay: 3, size: 46 },
-  { x: 1550, y: 180, icon: "code", delay: 16, size: 40 },
-  { x: 720, y: 700, icon: "email", delay: 9, size: 42 },
-  { x: 180, y: 450, icon: "data", delay: 18, size: 44 },
-  { x: 1100, y: 340, icon: "design", delay: 7, size: 46 },
-  { x: 480, y: 160, icon: "code", delay: 20, size: 38 },
-  { x: 1350, y: 500, icon: "email", delay: 11, size: 42 },
-  { x: 850, y: 600, icon: "data", delay: 15, size: 40 },
-  { x: 1700, y: 400, icon: "code", delay: 22, size: 44 },
+const orbs = [
+  { x: 25, y: 30, size: 320, color: molt.colors.gold, speed: 0.008, delay: 0 },
+  { x: 70, y: 20, size: 260, color: molt.colors.cyan, speed: 0.006, delay: 5 },
+  { x: 85, y: 65, size: 280, color: molt.colors.purple, speed: 0.01, delay: 10 },
+  { x: 15, y: 70, size: 240, color: molt.colors.gold, speed: 0.007, delay: 8 },
+  { x: 50, y: 80, size: 200, color: molt.colors.blue, speed: 0.009, delay: 12 },
+  { x: 40, y: 15, size: 180, color: molt.colors.goldLight, speed: 0.011, delay: 15 },
 ];
-
-// Connections between nodes (index pairs)
-const connections: [number, number][] = [
-  [0, 7], [0, 4], [1, 5], [1, 8], [2, 3], [2, 11],
-  [3, 6], [4, 10], [5, 11], [6, 14], [7, 1], [8, 2],
-  [9, 6], [10, 4], [11, 13], [12, 0], [13, 15], [14, 9],
-];
-
-const IconSvg: React.FC<{ type: string; size: number }> = ({ type, size }) => {
-  const s = size * 0.45;
-  switch (type) {
-    case "code":
-      return (
-        <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-          <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke={molt.colors.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case "email":
-      return (
-        <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-          <rect x="2" y="4" width="20" height="16" rx="3" stroke={molt.colors.goldLight} strokeWidth="2" />
-          <path d="M2 7l10 6 10-6" stroke={molt.colors.goldLight} strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      );
-    case "data":
-      return (
-        <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="14" width="4" height="7" rx="1" fill={molt.colors.cyan} />
-          <rect x="10" y="9" width="4" height="12" rx="1" fill={molt.colors.gold} />
-          <rect x="17" y="4" width="4" height="17" rx="1" fill={molt.colors.green} />
-        </svg>
-      );
-    default: // design
-      return (
-        <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke={molt.colors.purple} strokeWidth="2" />
-          <circle cx="12" cy="12" r="4" fill={molt.colors.purple} opacity={0.6} />
-          <path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke={molt.colors.purple} strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      );
-  }
-};
 
 export const MoltScene1World: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Title animation
-  const titleSpring = spring({ frame: frame - 15, fps, config: { damping: 14, stiffness: 70 } });
-  const titleY = interpolate(titleSpring, [0, 1], [40, 0]);
+  // Cinematic zoom: starts slightly scaled up, settles to 1.0
+  const zoomScale = interpolate(frame, [0, 50], [1.08, 1.0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
 
-  const subtitleSpring = spring({ frame: frame - 30, fps, config: { damping: 14, stiffness: 70 } });
+  // Scene entrance fade
+  const enterOp = interpolate(frame, [0, 15], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
 
-  // Exit
+  // Headline — Apple-style: high damping, crisp settle
+  const headlineSpring = spring({
+    frame: frame - 12,
+    fps,
+    config: { damping: 24, stiffness: 140, mass: 1 },
+  });
+  const headlineY = interpolate(headlineSpring, [0, 1], [35, 0]);
+
+  // Subtitle — staggered after headline
+  const subSpring = spring({
+    frame: frame - 20,
+    fps,
+    config: { damping: 24, stiffness: 140, mass: 1 },
+  });
+  const subY = interpolate(subSpring, [0, 1], [25, 0]);
+
+  // Exit: clean fade + subtle scale-down
   const exitOp = interpolate(frame, [155, 180], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.in(Easing.cubic),
+  });
+  const exitScale = interpolate(frame, [155, 180], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // Pulse for nodes
-  const pulse = Math.sin(frame * 0.08) * 0.15 + 0.85;
+  const combinedOp = Math.min(enterOp, exitOp);
 
   return (
     <AbsoluteFill
       style={{
         background: molt.colors.bg,
-        opacity: exitOp,
+        opacity: combinedOp,
+        transform: `scale(${zoomScale * exitScale})`,
       }}
     >
-      {/* Radial gold glow background */}
+      {/* Deep atmospheric background */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 80% 60% at 50% 50%, ${molt.colors.goldGlow}, transparent)`,
+          background: `radial-gradient(ellipse 100% 80% at 50% 50%, #141420, ${molt.colors.bg})`,
         }}
       />
 
-      {/* Connection lines */}
-      <svg
-        style={{ position: "absolute", inset: 0 }}
-        width={1920}
-        height={1080}
-      >
-        {connections.map(([a, b], i) => {
-          const na = nodes[a];
-          const nb = nodes[b];
-          const lineSpring = spring({
-            frame: frame - Math.max(na.delay, nb.delay) - 5,
-            fps,
-            config: { damping: 20, stiffness: 60 },
-          });
-          return (
-            <line
-              key={i}
-              x1={na.x}
-              y1={na.y}
-              x2={na.x + (nb.x - na.x) * lineSpring}
-              y2={na.y + (nb.y - na.y) * lineSpring}
-              stroke={molt.colors.gold}
-              strokeWidth={1.5}
-              opacity={lineSpring * 0.2}
-            />
-          );
-        })}
-      </svg>
-
-      {/* Nodes */}
-      {nodes.map((node, i) => {
-        const nodeSpring = spring({
-          frame: frame - node.delay,
+      {/* Floating ambient orbs — large, soft blurred glows */}
+      {orbs.map((orb, i) => {
+        const orbSpring = spring({
+          frame: frame - orb.delay,
           fps,
-          config: { damping: 12, stiffness: 100 },
+          config: { damping: 30, stiffness: 60 },
         });
-        const scale = interpolate(nodeSpring, [0, 1], [0, 1]);
-        const glowSize = node.size * 2 * pulse;
+        const driftX = Math.sin(frame * orb.speed + i * 2) * 20;
+        const driftY = Math.cos(frame * orb.speed * 0.7 + i) * 15;
 
         return (
           <div
             key={i}
             style={{
               position: "absolute",
-              left: node.x - node.size / 2,
-              top: node.y - node.size / 2,
-              width: node.size,
-              height: node.size,
-              transform: `scale(${scale})`,
-              opacity: nodeSpring,
+              left: `${orb.x}%`,
+              top: `${orb.y}%`,
+              width: orb.size,
+              height: orb.size,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${orb.color}18, ${orb.color}06, transparent 70%)`,
+              transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px)`,
+              opacity: orbSpring * 0.6,
             }}
-          >
-            {/* Glow ring */}
-            <div
-              style={{
-                position: "absolute",
-                left: -(glowSize - node.size) / 2,
-                top: -(glowSize - node.size) / 2,
-                width: glowSize,
-                height: glowSize,
-                borderRadius: molt.radius.full,
-                background: `radial-gradient(circle, ${molt.colors.goldGlowStrong}, transparent 70%)`,
-                opacity: 0.5,
-              }}
-            />
-            {/* Node circle */}
-            <div
-              style={{
-                position: "relative",
-                width: node.size,
-                height: node.size,
-                borderRadius: molt.radius.full,
-                background: molt.colors.bgCard,
-                border: `2px solid ${molt.colors.borderGold}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: `0 0 20px ${molt.colors.goldGlow}`,
-              }}
-            >
-              <IconSvg type={node.icon} size={node.size} />
-            </div>
-          </div>
+          />
         );
       })}
 
-      {/* Title overlay */}
+      {/* Particle dots — golden-ratio distributed */}
+      {Array.from({ length: 30 }).map((_, i) => {
+        const px = (i * 137.5) % 100;
+        const py = (i * 83.7) % 100;
+        const particleOp = interpolate(frame, [i * 2, i * 2 + 20], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        });
+        const pulse = Math.sin(frame * 0.04 + i * 0.5) * 0.3 + 0.7;
+
+        return (
+          <div
+            key={`p-${i}`}
+            style={{
+              position: "absolute",
+              left: `${px}%`,
+              top: `${py}%`,
+              width: 4,
+              height: 4,
+              borderRadius: "50%",
+              background: molt.colors.gold,
+              opacity: particleOp * pulse * 0.35,
+            }}
+          />
+        );
+      })}
+
+      {/* Center content — massive Apple-style typography */}
       <div
         style={{
           position: "absolute",
-          bottom: 120,
-          width: "100%",
-          textAlign: "center",
-          opacity: titleSpring,
-          transform: `translateY(${titleY}px)`,
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 120px",
         }}
       >
         <div
           style={{
-            fontSize: 62,
-            fontWeight: 800,
-            fontFamily: molt.fonts.display,
-            letterSpacing: "-0.03em",
-            color: molt.colors.text,
-            marginBottom: 16,
+            opacity: headlineSpring,
+            transform: `translateY(${headlineY}px)`,
+            textAlign: "center",
           }}
         >
-          AI agents are already doing{" "}
-          <span
+          <div
             style={{
-              background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold}, ${molt.colors.goldAccent})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              fontSize: 82,
+              fontWeight: 800,
+              fontFamily: molt.fonts.display,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.05,
+              color: molt.colors.text,
             }}
           >
-            real work
-          </span>
+            AI agents are already
+            <br />
+            doing{" "}
+            <span
+              style={{
+                background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold}, ${molt.colors.goldAccent})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              real work
+            </span>
+          </div>
         </div>
+
         <div
           style={{
-            fontSize: 28,
-            fontWeight: 500,
-            color: molt.colors.textSecondary,
-            fontFamily: molt.fonts.body,
-            opacity: subtitleSpring,
+            opacity: subSpring,
+            transform: `translateY(${subY}px)`,
+            marginTop: 28,
           }}
         >
-          Millions running right now on machines all over the world
+          <div
+            style={{
+              fontSize: 32,
+              fontWeight: 500,
+              color: molt.colors.textSecondary,
+              fontFamily: molt.fonts.body,
+              textAlign: "center",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Millions running right now on machines all over the world
+          </div>
         </div>
       </div>
+
+      {/* Subtle noise overlay */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.025,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          pointerEvents: "none",
+        }}
+      />
     </AbsoluteFill>
   );
 };
