@@ -9,15 +9,19 @@ import {
 import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
-   Scene 4 — Your Agent Earns for You (22-30s · 240 frames)
+   Scene 4 — Your Agent Earns for You (20-28s · 240 frames)
    Apple-inspired: centered composition, massive hero number,
    high-damping springs, glass cards, film grain.
    ────────────────────────────────────────────────── */
 
 const earningsBadges = [
-  { amount: "$45", label: "Code Review", delay: 0 },
-  { amount: "$120", label: "Landing Page", delay: 5 },
-  { amount: "$85", label: "API Integration", delay: 10 },
+  { amount: "$180", label: "Content Creation", delay: 0 },
+  { amount: "$120", label: "Landing Page", delay: 4 },
+  { amount: "$95", label: "Automation", delay: 8 },
+  { amount: "$110", label: "Post Scheduling", delay: 12 },
+  { amount: "$85", label: "API Integration", delay: 16 },
+  { amount: "$65", label: "Scraping Content", delay: 20 },
+  { amount: "$45", label: "Code Review", delay: 24 },
 ];
 
 export const MoltScene4Earns: React.FC = () => {
@@ -52,15 +56,16 @@ export const MoltScene4Earns: React.FC = () => {
   const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
   const headlineOpacity = interpolate(headlineSpring, [0, 1], [0, 1]);
 
-  // ── Hero number reveal (starts at frame 35) ──
-  const numberStartFrame = 35;
-  const numberEndFrame = 140;
+  // ── Hero number reveal (starts at frame 30) ──
+  const numberStartFrame = 30;
+  const numberEndFrame = 120;
   const numberProgress = interpolate(frame, [numberStartFrame, numberEndFrame], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const heroNumber = Math.floor(numberProgress * 350);
+  const heroNumber = Math.floor(numberProgress * 1750);
+  const formattedNumber = heroNumber.toLocaleString("en-US");
 
   const numberSpring = spring({
     frame: frame - numberStartFrame,
@@ -71,27 +76,38 @@ export const MoltScene4Earns: React.FC = () => {
   const numberScale = interpolate(numberSpring, [0, 1], [0.94, 1]);
   const numberOpacity = interpolate(numberSpring, [0, 1], [0, 1]);
 
-  // ── "earned this week" label (starts at frame 50) ──
+  // ── "earned this week" label (starts at frame 45) ──
   const labelSpring = spring({
-    frame: frame - 50,
+    frame: frame - 45,
     fps,
     config: { damping: 28, stiffness: 150 },
   });
   const labelY = interpolate(labelSpring, [0, 1], [20, 0]);
   const labelOpacity = interpolate(labelSpring, [0, 1], [0, 1]);
 
-  // ── Earnings badges (start at frame 100, stagger 5 frames) ──
-  const badgeSprings = earningsBadges.map((badge) =>
+  // ── Earnings badges — row 1 starts at frame 80, row 2 at frame 95 ──
+  const row1Badges = earningsBadges.slice(0, 4);
+  const row2Badges = earningsBadges.slice(4);
+
+  const row1Springs = row1Badges.map((badge) =>
     spring({
-      frame: frame - (100 + badge.delay),
+      frame: frame - (80 + badge.delay),
       fps,
       config: { damping: 24, stiffness: 150 },
     })
   );
 
-  // ── Bottom tagline (starts at frame 155) ──
+  const row2Springs = row2Badges.map((badge) =>
+    spring({
+      frame: frame - (95 + badge.delay),
+      fps,
+      config: { damping: 24, stiffness: 150 },
+    })
+  );
+
+  // ── Bottom tagline (starts at frame 145) ──
   const taglineSpring = spring({
-    frame: frame - 155,
+    frame: frame - 145,
     fps,
     config: { damping: 26, stiffness: 140 },
   });
@@ -140,7 +156,7 @@ export const MoltScene4Earns: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 160,
+          top: 110,
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -150,7 +166,7 @@ export const MoltScene4Earns: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 70,
+            fontSize: 64,
             fontWeight: 700,
             color: molt.colors.text,
             fontFamily: molt.fonts.display,
@@ -176,7 +192,7 @@ export const MoltScene4Earns: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 310,
+          top: 240,
           width: "100%",
           display: "flex",
           flexDirection: "column",
@@ -187,7 +203,7 @@ export const MoltScene4Earns: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 140,
+            fontSize: 120,
             fontWeight: 800,
             fontFamily: molt.fonts.display,
             letterSpacing: "-0.04em",
@@ -199,13 +215,13 @@ export const MoltScene4Earns: React.FC = () => {
             filter: `drop-shadow(0 0 40px ${molt.colors.goldGlowStrong})`,
           }}
         >
-          ${heroNumber}
+          ${formattedNumber}
         </div>
 
         {/* ── "EARNED THIS WEEK" label ── */}
         <div
           style={{
-            marginTop: 16,
+            marginTop: 12,
             fontSize: 16,
             fontWeight: 600,
             color: molt.colors.textSecondary,
@@ -220,20 +236,20 @@ export const MoltScene4Earns: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Earnings badges row ── */}
+      {/* ── Earnings badges — Row 1 ── */}
       <div
         style={{
           position: "absolute",
-          top: 610,
+          top: 520,
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          gap: 20,
+          gap: 16,
         }}
       >
-        {earningsBadges.map((badge, i) => {
-          const badgeY = interpolate(badgeSprings[i], [0, 1], [25, 0]);
-          const badgeOpacity = interpolate(badgeSprings[i], [0, 1], [0, 1]);
+        {row1Badges.map((badge, i) => {
+          const badgeY = interpolate(row1Springs[i], [0, 1], [25, 0]);
+          const badgeOpacity = interpolate(row1Springs[i], [0, 1], [0, 1]);
 
           return (
             <div
@@ -241,11 +257,11 @@ export const MoltScene4Earns: React.FC = () => {
               style={{
                 background: "rgba(255,255,255,0.04)",
                 border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 24,
-                padding: "20px 32px",
+                borderRadius: 20,
+                padding: "16px 24px",
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
+                gap: 12,
                 opacity: badgeOpacity,
                 transform: `translateY(${badgeY}px)`,
                 backdropFilter: "blur(12px)",
@@ -253,7 +269,7 @@ export const MoltScene4Earns: React.FC = () => {
             >
               <span
                 style={{
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: 800,
                   fontFamily: molt.fonts.mono,
                   background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
@@ -265,7 +281,65 @@ export const MoltScene4Earns: React.FC = () => {
               </span>
               <span
                 style={{
-                  fontSize: 18,
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: molt.colors.textSecondary,
+                  fontFamily: molt.fonts.body,
+                }}
+              >
+                {badge.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Earnings badges — Row 2 ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 600,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          gap: 16,
+        }}
+      >
+        {row2Badges.map((badge, i) => {
+          const badgeY = interpolate(row2Springs[i], [0, 1], [25, 0]);
+          const badgeOpacity = interpolate(row2Springs[i], [0, 1], [0, 1]);
+
+          return (
+            <div
+              key={i}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 20,
+                padding: "16px 24px",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                opacity: badgeOpacity,
+                transform: `translateY(${badgeY}px)`,
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  fontFamily: molt.fonts.mono,
+                  background: `linear-gradient(135deg, ${molt.colors.goldLight}, ${molt.colors.gold})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {badge.amount}
+              </span>
+              <span
+                style={{
+                  fontSize: 16,
                   fontWeight: 500,
                   color: molt.colors.textSecondary,
                   fontFamily: molt.fonts.body,
@@ -282,7 +356,7 @@ export const MoltScene4Earns: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 100,
+          bottom: 90,
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -292,7 +366,7 @@ export const MoltScene4Earns: React.FC = () => {
       >
         <div
           style={{
-            fontSize: 30,
+            fontSize: 28,
             fontWeight: 500,
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,

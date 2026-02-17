@@ -9,12 +9,12 @@ import {
 import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
-   Scene 7 — CTA  (48-60s · 360 frames, 30fps, 1920×1080)
+   Scene 7 — CTA  (44-60s · 480 frames, 30fps, 1920×1080)
 
-   Apple-inspired redesign.
+   Apple-inspired redesign with MM gold coin logo.
    Centered composition, massive negative space,
    high-damping springs, film grain, pulsing glow,
-   clean fade to black.  No corner icons.
+   clean fade to black.
    ────────────────────────────────────────────────── */
 
 // Deterministic film grain: seeded pseudo-random via simple hash
@@ -22,6 +22,86 @@ const grain = (x: number, y: number, f: number): number => {
   const n = Math.sin(x * 12.9898 + y * 78.233 + f * 43.1234) * 43758.5453;
   return n - Math.floor(n);
 };
+
+/* ── MM Gold Coin Logo ── */
+const MMCoinLogo: React.FC<{ size: number; opacity: number }> = ({
+  size,
+  opacity,
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 200 200"
+    style={{ opacity }}
+  >
+    <defs>
+      <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#E5C466" />
+        <stop offset="40%" stopColor="#D4A843" />
+        <stop offset="100%" stopColor="#A6832E" />
+      </linearGradient>
+      <radialGradient id="coinShine" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stopColor="rgba(255,255,255,0.35)" />
+        <stop offset="60%" stopColor="rgba(255,255,255,0.05)" />
+        <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+      </radialGradient>
+      <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#E5C466" />
+        <stop offset="100%" stopColor="#8A6D24" />
+      </linearGradient>
+      <filter id="coinShadow">
+        <feDropShadow
+          dx="0"
+          dy="4"
+          stdDeviation="12"
+          floodColor="rgba(212,168,67,0.4)"
+        />
+      </filter>
+    </defs>
+    {/* Outer rim */}
+    <circle cx="100" cy="100" r="96" fill="url(#rimGrad)" filter="url(#coinShadow)" />
+    {/* Inner face */}
+    <circle cx="100" cy="100" r="88" fill="url(#coinGrad)" />
+    {/* Shine overlay */}
+    <circle cx="100" cy="100" r="88" fill="url(#coinShine)" />
+    {/* Inner ring detail */}
+    <circle
+      cx="100"
+      cy="100"
+      r="78"
+      fill="none"
+      stroke="rgba(255,255,255,0.12)"
+      strokeWidth="1.5"
+    />
+    {/* MM text */}
+    <text
+      x="100"
+      y="115"
+      textAnchor="middle"
+      fontFamily="Inter, system-ui, sans-serif"
+      fontWeight="900"
+      fontSize="72"
+      fill="#0A0A0B"
+      letterSpacing="-2"
+    >
+      MM
+    </text>
+    {/* Subtle bottom shadow on text for depth */}
+    <text
+      x="100"
+      y="115"
+      textAnchor="middle"
+      fontFamily="Inter, system-ui, sans-serif"
+      fontWeight="900"
+      fontSize="72"
+      fill="rgba(255,255,255,0.08)"
+      letterSpacing="-2"
+      dy="-1"
+    >
+      MM
+    </text>
+  </svg>
+);
 
 export const MoltScene7CTA: React.FC = () => {
   const frame = useCurrentFrame();
@@ -46,29 +126,35 @@ export const MoltScene7CTA: React.FC = () => {
   const overlineSpring = hd(20, 26, 140);
   const overlineY = interpolate(overlineSpring, [0, 1], [25, 0]);
 
-  const logoSpring = hd(40, 24, 160);
+  // Logo coin entrance
+  const logoSpring = hd(35, 24, 160);
   const logoY = interpolate(logoSpring, [0, 1], [30, 0]);
+  const logoScale = interpolate(logoSpring, [0, 1], [0.85, 1]);
 
-  // URL typewriter: starts at frame 80, types 14 chars over ~50 frames
+  // Brand name entrance (after coin)
+  const brandSpring = hd(55, 24, 150);
+  const brandY = interpolate(brandSpring, [0, 1], [25, 0]);
+
+  // URL typewriter: starts at frame 100, types 14 chars over ~50 frames
   const urlText = "moltmarket.org";
-  const urlContainerOpacity = interpolate(frame, [75, 85], [0, 1], {
+  const urlContainerOpacity = interpolate(frame, [90, 100], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const urlProgress = interpolate(frame, [85, 135], [0, urlText.length], {
+  const urlProgress = interpolate(frame, [100, 150], [0, urlText.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const visibleUrl = urlText.slice(0, Math.floor(urlProgress));
   const cursorVisible = Math.floor(frame / 15) % 2 === 0;
-  const showCursor = frame >= 80 && frame < 180;
+  const showCursor = frame >= 95 && frame < 250;
 
   // Button entrance
-  const buttonSpring = hd(150, 22, 130);
+  const buttonSpring = hd(175, 22, 130);
   const buttonY = interpolate(buttonSpring, [0, 1], [20, 0]);
 
   // Tagline entrance
-  const taglineSpring = hd(185, 28, 120);
+  const taglineSpring = hd(210, 28, 120);
   const taglineY = interpolate(taglineSpring, [0, 1], [20, 0]);
 
   // ── Pulsing glow behind logo (subtle 0.15 oscillation) ──
@@ -81,8 +167,8 @@ export const MoltScene7CTA: React.FC = () => {
   const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
   const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // ── Fade to black (last 50 frames: 310-360) ────
-  const fadeToBlack = interpolate(frame, [310, 360], [0, 1], {
+  // ── Fade to black (last 50 frames: 430-480) ────
+  const fadeToBlack = interpolate(frame, [430, 480], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
@@ -140,7 +226,7 @@ export const MoltScene7CTA: React.FC = () => {
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,
             letterSpacing: "0.01em",
-            marginBottom: 40,
+            marginBottom: 32,
             opacity: overlineSpring,
             transform: `translateY(${overlineY}px)`,
           }}
@@ -148,12 +234,23 @@ export const MoltScene7CTA: React.FC = () => {
           The AI workforce is here.
         </div>
 
-        {/* 2. "Molt Market" text logo */}
+        {/* 2. MM Gold Coin Logo */}
         <div
           style={{
+            marginBottom: 20,
             opacity: logoSpring,
-            transform: `translateY(${logoY}px)`,
-            marginBottom: 36,
+            transform: `translateY(${logoY}px) scale(${logoScale})`,
+          }}
+        >
+          <MMCoinLogo size={120} opacity={1} />
+        </div>
+
+        {/* 3. "Molt Market" brand text */}
+        <div
+          style={{
+            opacity: brandSpring,
+            transform: `translateY(${brandY}px)`,
+            marginBottom: 28,
             display: "flex",
             alignItems: "baseline",
             gap: 0,
@@ -161,7 +258,7 @@ export const MoltScene7CTA: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 64,
+              fontSize: 56,
               fontWeight: 800,
               color: molt.colors.text,
               fontFamily: molt.fonts.display,
@@ -173,12 +270,12 @@ export const MoltScene7CTA: React.FC = () => {
           </span>
           <span
             style={{
-              fontSize: 64,
+              fontSize: 56,
               fontWeight: 800,
               fontFamily: molt.fonts.display,
               letterSpacing: "-0.03em",
               lineHeight: 1,
-              marginLeft: 16,
+              marginLeft: 14,
               background: `linear-gradient(135deg, ${molt.colors.goldLight} 0%, ${molt.colors.gold} 50%, ${molt.colors.goldAccent} 100%)`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -188,12 +285,12 @@ export const MoltScene7CTA: React.FC = () => {
           </span>
         </div>
 
-        {/* 3. URL typewriter */}
+        {/* 4. URL typewriter */}
         <div
           style={{
             opacity: urlContainerOpacity,
-            marginBottom: 44,
-            height: 50,
+            marginBottom: 36,
+            height: 46,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -201,7 +298,7 @@ export const MoltScene7CTA: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 40,
+              fontSize: 36,
               fontWeight: 600,
               color: molt.colors.gold,
               fontFamily: molt.fonts.mono,
@@ -213,7 +310,7 @@ export const MoltScene7CTA: React.FC = () => {
           {showCursor && cursorVisible && (
             <span
               style={{
-                fontSize: 40,
+                fontSize: 36,
                 fontWeight: 400,
                 color: molt.colors.gold,
                 fontFamily: molt.fonts.mono,
@@ -226,20 +323,20 @@ export const MoltScene7CTA: React.FC = () => {
           )}
         </div>
 
-        {/* 4. "Join Early" pill button */}
+        {/* 5. "Join Early" pill button */}
         <div
           style={{
             opacity: buttonSpring,
             transform: `translateY(${buttonY}px)`,
-            marginBottom: 36,
+            marginBottom: 28,
           }}
         >
           <div
             style={{
-              padding: "18px 64px",
+              padding: "16px 56px",
               borderRadius: molt.radius.full,
               background: `linear-gradient(135deg, ${molt.colors.goldLight} 0%, ${molt.colors.gold} 60%, ${molt.colors.goldAccent} 100%)`,
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: 700,
               color: molt.colors.bg,
               fontFamily: molt.fonts.display,
@@ -252,10 +349,10 @@ export const MoltScene7CTA: React.FC = () => {
           </div>
         </div>
 
-        {/* 5. Tagline */}
+        {/* 6. Tagline */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: 500,
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,
