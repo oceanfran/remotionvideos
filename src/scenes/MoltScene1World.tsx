@@ -93,7 +93,7 @@ export const MoltScene1World: React.FC = () => {
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 100% 80% at 50% 50%, #141414, ${molt.colors.bg})`,
+          background: `radial-gradient(ellipse 100% 80% at 50% 50%, #0D0D0E, ${molt.colors.bg})`,
         }}
       />
 
