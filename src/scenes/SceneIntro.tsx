@@ -340,7 +340,7 @@ export const SceneHook: React.FC = () => {
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: `radial-gradient(ellipse at 50% ${25 + bgShift * 0.3}%, hsl(210, 95%, 95%) 0%, transparent 55%)`,
+          background: `radial-gradient(ellipse at 50% ${25 + bgShift * 0.3}%, hsl(210, 95%, 96%) 0%, transparent 55%)`,
         }}
       />
       {/* Secondary glow */}
