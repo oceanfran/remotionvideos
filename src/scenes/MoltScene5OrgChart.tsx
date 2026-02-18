@@ -231,7 +231,7 @@ export const MoltScene5OrgChart: React.FC = () => {
             fontWeight: 500,
             color: molt.colors.textSecondary,
             fontFamily: molt.fonts.body,
-            fontStyle: "italic",
+            fontStyle: "normal",
             letterSpacing: "0.01em",
           }}
         >
