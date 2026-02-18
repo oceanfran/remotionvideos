@@ -235,7 +235,7 @@ export const MoltScene5OrgChart: React.FC = () => {
             letterSpacing: "0.01em",
           }}
         >
-          "Anything a human can do on a computer, an AI agent can do too."
+          Anything a human can do on a computer, an AI agent can do too.
         </span>
       </div>
 
