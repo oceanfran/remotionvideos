@@ -301,18 +301,7 @@ export const MoltScene7CTA: React.FC = () => {
           />
         </div>
 
-        {/* 3. MM Gold Coin Logo */}
-        <div
-          style={{
-            marginBottom: 16,
-            opacity: logoSpring,
-            transform: `translateY(${logoY}px) scale(${logoScale})`,
-          }}
-        >
-          <MMCoinLogo size={100} opacity={1} />
-        </div>
-
-        {/* 4. "Molt Market" brand text */}
+        {/* 3. "Molt Market" brand text */}
         <div
           style={{
             opacity: brandSpring,

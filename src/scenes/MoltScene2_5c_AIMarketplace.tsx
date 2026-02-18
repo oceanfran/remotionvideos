@@ -66,7 +66,7 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
   const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
 
-  /* ── Phase 2: "until MoltMarket" (125+) ── */
+  /* ── Phase 2: "until Molt Market" (125+) ── */
   const moltSpring = spring({
     frame: Math.max(0, frame - 88),
     fps,
@@ -74,6 +74,12 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
   const moltY = interpolate(moltSpring, [0, 1], [25, 0]);
   const goldFlash = interpolate(frame, [88, 115, 145], [0, 0.25, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  /* ── "Until" fades away 2s (60 frames) after appearing at frame 88 ── */
+  const untilOpacity = interpolate(frame, [148, 170], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -360,6 +366,7 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
               color: molt.colors.textSecondary,
               fontFamily: molt.fonts.body,
               marginBottom: 16,
+              opacity: untilOpacity,
             }}
           >
             until
@@ -376,7 +383,7 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
               filter: `drop-shadow(0 0 30px ${molt.colors.goldGlowStrong})`,
             }}
           >
-            MoltMarket
+            Molt Market
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ const roles: RoleCard[] = [
   { title: "Developer", type: "ai", staggerIndex: 0 },
   { title: "CMO", type: "ai", staggerIndex: 1 },
   { title: "Analyst", type: "ai", staggerIndex: 2 },
-  { title: "Assistant", type: "human", staggerIndex: 3 },
+  { title: "Assistant", type: "ai", staggerIndex: 3 },
   { title: "Marketer", type: "ai", staggerIndex: 4 },
 ];
 
@@ -99,6 +99,14 @@ export const MoltScene5OrgChart: React.FC = () => {
       config: { damping: 24, stiffness: 140 },
     })
   );
+
+  // ── Quote spring (appears after headline) ──
+  const quoteSpring = spring({
+    frame: frame - 35,
+    fps,
+    config: { damping: 26, stiffness: 130 },
+  });
+  const quoteY = interpolate(quoteSpring, [0, 1], [20, 0]);
 
   // ── Subtitle spring ──
   const subtitleSpring = spring({
@@ -203,6 +211,31 @@ export const MoltScene5OrgChart: React.FC = () => {
           >
             hiring
           </span>
+        </span>
+      </div>
+
+      {/* ── Quote text ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 245,
+          width: "100%",
+          textAlign: "center",
+          opacity: quoteSpring,
+          transform: `translateY(${quoteY}px)`,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 24,
+            fontWeight: 500,
+            color: molt.colors.textSecondary,
+            fontFamily: molt.fonts.body,
+            fontStyle: "italic",
+            letterSpacing: "0.01em",
+          }}
+        >
+          "Anything a human can do on a computer, an AI agent can do too."
         </span>
       </div>
 
