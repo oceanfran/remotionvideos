@@ -9,9 +9,10 @@ import {
 import { molt } from "../moltTheme";
 
 /* ──────────────────────────────────────────────────
-   Scene 5 — Bigger Than Freelance (30-40s · 300 frames)
+   Scene 5 — Bigger Than Freelance (30-40s · 378 frames)
    Apple-inspired redesign: centered composition,
    high-damping springs, glass cards, film grain.
+   Enhanced with animated spawning and secondary role cards.
    ────────────────────────────────────────────────── */
 
 interface RoleCard {
@@ -26,6 +27,18 @@ const roles: RoleCard[] = [
   { title: "Analyst", type: "ai", staggerIndex: 2 },
   { title: "Assistant", type: "human", staggerIndex: 3 },
   { title: "Marketer", type: "ai", staggerIndex: 4 },
+];
+
+/* ── Secondary roles that spawn in after the main ones ── */
+const secondaryRoles = [
+  { title: "Researcher", type: "ai" as const, delay: 140 },
+  { title: "Aggregator", type: "ai" as const, delay: 150 },
+  { title: "Consultant", type: "ai" as const, delay: 160 },
+  { title: "Ops Manager", type: "ai" as const, delay: 170 },
+  { title: "Receptionist", type: "ai" as const, delay: 180 },
+  { title: "Auto Blogger", type: "ai" as const, delay: 190 },
+  { title: "Telemarketer", type: "ai" as const, delay: 200 },
+  { title: "Bookkeeper", type: "ai" as const, delay: 210 },
 ];
 
 export const MoltScene5OrgChart: React.FC = () => {
@@ -69,18 +82,27 @@ export const MoltScene5OrgChart: React.FC = () => {
   });
   const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
 
-  // ── Role card springs (staggered by 5 frames each, starting at frame 55) ──
+  // ── Role card springs (staggered by 8 frames each, starting at frame 55) ──
   const cardSprings = roles.map((role) =>
     spring({
-      frame: frame - (55 + role.staggerIndex * 5),
+      frame: frame - (55 + role.staggerIndex * 8),
       fps,
-      config: { damping: 24, stiffness: 150 },
+      config: { damping: 22, stiffness: 160 },
+    })
+  );
+
+  // ── Secondary role springs ──
+  const secondarySprings = secondaryRoles.map((role) =>
+    spring({
+      frame: frame - role.delay,
+      fps,
+      config: { damping: 24, stiffness: 140 },
     })
   );
 
   // ── Subtitle spring ──
   const subtitleSpring = spring({
-    frame: frame - 110,
+    frame: frame - 250,
     fps,
     config: { damping: 26, stiffness: 130 },
   });
@@ -129,7 +151,7 @@ export const MoltScene5OrgChart: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 140,
+          top: 100,
           width: "100%",
           textAlign: "center",
           opacity: labelSpring,
@@ -154,7 +176,7 @@ export const MoltScene5OrgChart: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 200,
+          top: 155,
           width: "100%",
           textAlign: "center",
           opacity: headlineSpring,
@@ -184,7 +206,7 @@ export const MoltScene5OrgChart: React.FC = () => {
         </span>
       </div>
 
-      {/* ── Role cards row ── */}
+      {/* ── Primary role cards row ── */}
       <div
         style={{
           position: "absolute",
@@ -195,7 +217,7 @@ export const MoltScene5OrgChart: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: 100,
+          paddingTop: 40,
         }}
       >
         <div
@@ -208,8 +230,9 @@ export const MoltScene5OrgChart: React.FC = () => {
         >
           {roles.map((role, i) => {
             const s = cardSprings[i];
-            const cardY = interpolate(s, [0, 1], [35, 0]);
-            const cardScale = interpolate(s, [0, 1], [0.94, 1]);
+            const cardY = interpolate(s, [0, 1], [40, 0]);
+            const cardScale = interpolate(s, [0, 1], [0.8, 1]);
+            const cardRotate = interpolate(s, [0, 1], [8, 0]);
 
             const isAI = role.type === "ai";
             const accentColor = isAI ? molt.colors.gold : molt.colors.cyan;
@@ -217,13 +240,16 @@ export const MoltScene5OrgChart: React.FC = () => {
               ? molt.colors.borderGold
               : "rgba(6, 182, 212, 0.3)";
 
+            // Subtle floating animation after spawn
+            const floatOffset = s > 0.9 ? Math.sin(frame * 0.025 + i * 1.2) * 2 : 0;
+
             return (
               <div
                 key={role.title}
                 style={{
                   width: cardWidth,
                   opacity: s,
-                  transform: `translateY(${cardY}px) scale(${cardScale})`,
+                  transform: `translateY(${cardY + floatOffset}px) scale(${cardScale}) rotate(${cardRotate}deg)`,
                 }}
               >
                 <div
@@ -420,11 +446,91 @@ export const MoltScene5OrgChart: React.FC = () => {
         </div>
       </div>
 
+      {/* ── Secondary role pills (smaller, appear after primary) ── */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 165,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          gap: 14,
+          padding: "0 200px",
+        }}
+      >
+        {secondaryRoles.map((role, i) => {
+          const s = secondarySprings[i];
+          const pillY = interpolate(s, [0, 1], [25, 0]);
+          const pillScale = interpolate(s, [0, 1], [0.7, 1]);
+          const floatOffset = s > 0.9 ? Math.sin(frame * 0.03 + i * 0.9) * 1.5 : 0;
+
+          return (
+            <div
+              key={`sec-${i}`}
+              style={{
+                opacity: s,
+                transform: `translateY(${pillY + floatOffset}px) scale(${pillScale})`,
+                padding: "10px 20px",
+                borderRadius: 16,
+                background: "rgba(255,255,255,0.03)",
+                border: `1px solid rgba(212,168,67,0.15)`,
+                backdropFilter: "blur(8px)",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              {/* Small AI icon */}
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: `rgba(212,168,67,0.1)`,
+                  border: `1px solid rgba(212,168,67,0.2)`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <rect
+                    x="3"
+                    y="8"
+                    width="18"
+                    height="12"
+                    rx="3"
+                    stroke={molt.colors.gold}
+                    strokeWidth="2"
+                  />
+                  <circle cx="9" cy="14" r="1.5" fill={molt.colors.gold} />
+                  <circle cx="15" cy="14" r="1.5" fill={molt.colors.gold} />
+                </svg>
+              </div>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: molt.colors.textSecondary,
+                  fontFamily: molt.fonts.body,
+                  letterSpacing: "0.01em",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {role.title}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
       {/* ── Bottom subtitle ── */}
       <div
         style={{
           position: "absolute",
-          bottom: 120,
+          bottom: 80,
           width: "100%",
           textAlign: "center",
           opacity: subtitleSpring * 0.6,

@@ -42,6 +42,35 @@ const freelancers = [
   { label: "Video Editor", icon: "play", delay: 63, color: molt.colors.amber },
 ];
 
+/* ── Layout constants ── */
+const CIRCLE_SIZE = 72;
+const CARD_WIDTH = 320;
+const CARD_GAP = 48;
+const FL_GAP = 40;
+const CARDS_TOP = 240;
+const CARD_HEIGHT = 230; // approximate rendered height of platform cards
+const FL_BOTTOM = 140;
+
+// Platform card centers (2 cards centered in 1920px)
+const totalCardsWidth = 2 * CARD_WIDTH + CARD_GAP;
+const cardsStartX = (1920 - totalCardsWidth) / 2;
+const platformCenters = [
+  cardsStartX + CARD_WIDTH / 2, // Upwork center X
+  cardsStartX + CARD_WIDTH + CARD_GAP + CARD_WIDTH / 2, // Fiverr center X
+];
+const platformBottomY = CARDS_TOP + CARD_HEIGHT; // bottom of cards
+
+// Freelancer circle positions (5 items centered)
+// Each item is roughly CIRCLE_SIZE wide + label adds ~10px per side
+const itemWidth = CIRCLE_SIZE + 20;
+const totalFlWidth = freelancers.length * itemWidth + (freelancers.length - 1) * FL_GAP;
+const flStartX = (1920 - totalFlWidth) / 2;
+const flCentersX = freelancers.map((_, i) => flStartX + itemWidth / 2 + i * (itemWidth + FL_GAP));
+const flCircleTopY = 1080 - FL_BOTTOM - CIRCLE_SIZE - 28; // top of circles (28 = gap + label)
+
+// Connection mapping: which platform each freelancer connects to
+const connectionMap = [0, 0, 0, 1, 1]; // Designer/Developer/Writer → Upwork, Marketer/VideoEditor → Fiverr
+
 export const MoltScene2_5b_Freelancers: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -131,11 +160,11 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 240,
+          top: CARDS_TOP,
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          gap: 48,
+          gap: CARD_GAP,
         }}
       >
         {platforms.map((platform) => {
@@ -161,7 +190,7 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
               style={{
                 opacity: pSpring,
                 transform: `translateY(${pY}px) scale(${pScale})`,
-                width: 320,
+                width: CARD_WIDTH,
                 padding: "36px 28px",
                 background: `linear-gradient(165deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))`,
                 border: `1px solid rgba(255,255,255,0.08)`,
@@ -269,11 +298,11 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 140,
+          bottom: FL_BOTTOM,
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          gap: 36,
+          gap: FL_GAP,
         }}
       >
         {freelancers.map((fl, i) => {
@@ -300,17 +329,18 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
               {/* Icon circle */}
               <div
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: CIRCLE_SIZE,
+                  height: CIRCLE_SIZE,
                   borderRadius: "50%",
-                  background: `${fl.color}12`,
-                  border: `1px solid ${fl.color}25`,
+                  background: `${fl.color}18`,
+                  border: `2px solid ${fl.color}40`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  boxShadow: `0 0 20px ${fl.color}20, 0 0 40px ${fl.color}10`,
                 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
                   <circle
                     cx="12"
                     cy="8"
@@ -328,7 +358,7 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
               </div>
               <span
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 600,
                   color: fl.color,
                   fontFamily: molt.fonts.body,
@@ -342,36 +372,74 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
         })}
       </div>
 
-      {/* ── Connection lines from freelancers to platform area ── */}
+      {/* ── Connection lines from platform cards to freelancer circles ── */}
       <svg
         width="1920"
         height="1080"
         style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
       >
+        <defs>
+          {freelancers.map((fl, i) => (
+            <linearGradient
+              key={`grad-${i}`}
+              id={`line-grad-${i}`}
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
+              <stop offset="0%" stopColor={platforms[connectionMap[i]].color} stopOpacity={0.6} />
+              <stop offset="100%" stopColor={fl.color} stopOpacity={0.6} />
+            </linearGradient>
+          ))}
+        </defs>
         {freelancers.map((fl, i) => {
           const lineSpring = spring({
-            frame: Math.max(0, frame - fl.delay - 8),
+            frame: Math.max(0, frame - fl.delay - 5),
             fps,
-            config: { damping: 28, stiffness: 100 },
+            config: { damping: 24, stiffness: 120 },
           });
 
-          // Freelancer positions (approximate from flex layout)
-          const startX = 480 + i * 196;
-          const startY = 830;
-          // Platform card area
-          const endX = i < 3 ? 810 : 1110;
-          const endY = 550;
-          const midY = (startY + endY) / 2 - 20;
+          const platformIdx = connectionMap[i];
+          // Start from bottom-center of platform card
+          const startX = platformCenters[platformIdx];
+          const startY = platformBottomY;
+          // End at top-center of freelancer circle
+          const endX = flCentersX[i];
+          const endY = flCircleTopY;
+
+          // Bezier control points for smooth S-curve
+          const midY = (startY + endY) / 2;
+          const ctrlX1 = startX;
+          const ctrlY1 = midY - 20;
+          const ctrlX2 = endX;
+          const ctrlY2 = midY + 20;
+
+          // Animate the path drawing with dashoffset
+          const pathLength = 600; // approximate
 
           return (
-            <g key={`fl-line-${i}`} opacity={lineSpring * 0.25}>
+            <g key={`fl-line-${i}`} opacity={lineSpring * 0.5}>
+              {/* Main connection line */}
               <path
-                d={`M ${startX} ${startY} Q ${startX} ${midY} ${startX + (endX - startX) * lineSpring} ${startY + (endY - startY) * lineSpring}`}
+                d={`M ${startX} ${startY} C ${ctrlX1} ${ctrlY1} ${ctrlX2} ${ctrlY2} ${endX} ${endY}`}
                 fill="none"
-                stroke={fl.color}
-                strokeWidth={1}
-                strokeDasharray="4 6"
+                stroke={`url(#line-grad-${i})`}
+                strokeWidth={1.5}
+                strokeDasharray={pathLength}
+                strokeDashoffset={pathLength * (1 - lineSpring)}
               />
+              {/* Glowing dot at the endpoint */}
+              {lineSpring > 0.8 && (
+                <circle
+                  cx={endX}
+                  cy={endY}
+                  r={3}
+                  fill={fl.color}
+                  opacity={interpolate(lineSpring, [0.8, 1], [0, 0.8])}
+                >
+                </circle>
+              )}
             </g>
           );
         })}

@@ -30,7 +30,7 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
    Scene 5b:     66.4-79.0s  (1993-2371)    Role cards
    Scene 5c:     79.0-89.0s  (2371-2669)    Platform features
    Scene 6:      89.0-106.3s (2669-3190)    Building for the Future
-   Scene 7:      106.3-116.5s(3190-3495)    CTA
+   Scene 7:      104.2-116.5s(3126-3495)    CTA
    ────────────────────────────────────────────────── */
 
 const VoiceoverAudio: React.FC = () => {
@@ -47,7 +47,7 @@ const BgMusicAudio: React.FC = () => {
     const src = staticFile("molt-bgmusic.mp3");
     return (
       <Loop durationInFrames={900}>
-        <Audio src={src} volume={0.21} />
+        <Audio src={src} volume={0.16} />
       </Loop>
     );
   } catch {
@@ -128,8 +128,8 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene6Timeline />
       </Sequence>
 
-      {/* Scene 7: CTA (106.3-116.5s) */}
-      <Sequence from={3190} durationInFrames={305}>
+      {/* Scene 7: CTA (104.2-116.5s) */}
+      <Sequence from={3126} durationInFrames={369}>
         <MoltScene7CTA />
       </Sequence>
 
