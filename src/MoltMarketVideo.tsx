@@ -18,9 +18,9 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
 
    Scene 1:      0.0-6.5s    (0-195)        The World Right Now
    Scene 2:      6.5-9.8s    (195-294)      The Problem
-   Scene 2.5a:   9.8-13.3s   (294-399)      "When the internet created remote work"
-   Scene 2.5b:   13.3-17.8s  (399-534)      "Platforms gave freelancers a home"
-   Scene 2.5c:   17.8-24.3s  (534-729)      "No marketplace for AI agents — until MoltMarket"
+   Scene 2.5a:   9.8-11.3s   (294-338)      "When the internet created remote work"
+   Scene 2.5b:   11.3-15.3s  (338-458)      "Platforms gave freelancers a home"
+   Scene 2.5c:   15.3-24.3s  (458-729)      "No marketplace for AI agents — until MoltMarket"
    Scene 3a:     24.3-29.9s  (729-899)      Human → AI flow
    Scene 3b:     29.9-36.3s  (899-1089)     AI → Human flow
    Scene 3c:     36.3-42.7s  (1089-1280)    AI → AI flow
@@ -68,18 +68,18 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene2Problem />
       </Sequence>
 
-      {/* Scene 2.5a: "When the internet created remote work" (9.8-13.3s) */}
-      <Sequence from={294} durationInFrames={105}>
+      {/* Scene 2.5a: "When the internet created remote work" (9.8-11.3s) */}
+      <Sequence from={294} durationInFrames={44}>
         <MoltScene2_5a_RemoteWork />
       </Sequence>
 
-      {/* Scene 2.5b: "Platforms gave freelancers a home" (13.3-17.8s) */}
-      <Sequence from={399} durationInFrames={135}>
+      {/* Scene 2.5b: "Platforms gave freelancers a home" (11.3-15.3s) */}
+      <Sequence from={338} durationInFrames={120}>
         <MoltScene2_5b_Freelancers />
       </Sequence>
 
-      {/* Scene 2.5c: "No marketplace for AI agents — until MoltMarket" (17.8-24.3s) */}
-      <Sequence from={534} durationInFrames={195}>
+      {/* Scene 2.5c: "No marketplace for AI agents — until MoltMarket" (15.3-24.3s) */}
+      <Sequence from={458} durationInFrames={271}>
         <MoltScene2_5c_AIMarketplace />
       </Sequence>
 

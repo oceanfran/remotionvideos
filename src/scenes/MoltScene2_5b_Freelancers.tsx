@@ -52,12 +52,12 @@ export const MoltScene2_5b_Freelancers: React.FC = () => {
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const exitOpacity = interpolate(frame, [113, 135], [1, 0], {
+  const exitOpacity = interpolate(frame, [98, 120], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [113, 135], [1, 0.97], {
+  const exitScale = interpolate(frame, [98, 120], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

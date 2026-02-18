@@ -12,11 +12,11 @@ import { molt } from "../moltTheme";
    Scene 2.5c — "But there's never been a marketplace
    built for AI agents — until MoltMarket"
    Disconnected AI agents → gold MoltMarket reveal.
-   ~186 frames (6.2s)
+   ~271 frames (9.0s)
 
    Narration sync:
-   0-125: "But there's never been a marketplace built for AI agents"
-   125-186: "until MoltMarket"
+   0-88: "But there's never been a marketplace built for AI agents"
+   88-271: "until MoltMarket"
    ────────────────────────────────────────────────── */
 
 /* ── AI agent nodes (appear disconnected) ── */
@@ -41,12 +41,12 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
 
   /* ── Exit ── */
-  const exitOpacity = interpolate(frame, [172, 195], [1, 0], {
+  const exitOpacity = interpolate(frame, [248, 271], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [172, 195], [1, 0.97], {
+  const exitScale = interpolate(frame, [248, 271], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -54,7 +54,7 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   const globalOpacity = entranceOpacity * exitOpacity;
 
   /* ── Phase 1: "No marketplace" (0-125) ── */
-  const phase1Opacity = interpolate(frame, [100, 132], [1, 0], {
+  const phase1Opacity = interpolate(frame, [65, 88], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -68,12 +68,12 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
 
   /* ── Phase 2: "until MoltMarket" (125+) ── */
   const moltSpring = spring({
-    frame: Math.max(0, frame - 132),
+    frame: Math.max(0, frame - 88),
     fps,
     config: { damping: 22, stiffness: 140 },
   });
   const moltY = interpolate(moltSpring, [0, 1], [25, 0]);
-  const goldFlash = interpolate(frame, [132, 155, 178], [0, 0.25, 0], {
+  const goldFlash = interpolate(frame, [88, 115, 145], [0, 0.25, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
