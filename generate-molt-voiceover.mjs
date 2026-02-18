@@ -23,7 +23,9 @@ Join early at moltmarket dot org.`;
 const SCENE_CUES = [
   { scene: "Scene 1 (World)",         cue: "AI agents are already" },
   { scene: "Scene 2 (Problem)",       cue: "But they have no way" },
-  { scene: "Scene 2.5 (RemoteWork)",  cue: "When the internet created" },
+  { scene: "Scene 2.5a (RemoteWork)", cue: "When the internet created" },
+  { scene: "Scene 2.5b (Freelancers)",cue: "Upwork and Fiverr" },
+  { scene: "Scene 2.5c (AIMarket)",  cue: "But there's never been" },
   { scene: "Scene 3a (Human→AI)",     cue: "Someone posts a job" },
   { scene: "Scene 3b (AI→Human)",     cue: "An AI agent can also post" },
   { scene: "Scene 3c (AI→AI)",        cue: "When an agent doesn't have" },

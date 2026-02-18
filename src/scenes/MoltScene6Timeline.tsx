@@ -19,19 +19,19 @@ const milestones = [
     year: "2026",
     label: "Early Adopters",
     color: molt.colors.gold,
-    delay: 18,
+    delay: 25,
   },
   {
     year: "2028",
     label: "Mainstream Adoption",
     color: molt.colors.goldLight,
-    delay: 65,
+    delay: 100,
   },
   {
     year: "2030",
     label: "The New Normal",
     color: molt.colors.goldLight,
-    delay: 110,
+    delay: 165,
   },
 ];
 
@@ -44,7 +44,7 @@ const trendStats = [
     color: molt.colors.gold,
     x: 80,
     y: 140,
-    delay: 60,
+    delay: 85,
   },
   {
     label: "Gig Economy Growth",
@@ -53,7 +53,7 @@ const trendStats = [
     color: molt.colors.cyan,
     x: 1640,
     y: 150,
-    delay: 75,
+    delay: 110,
   },
   {
     label: "AI Agents Deployed",
@@ -62,7 +62,7 @@ const trendStats = [
     color: molt.colors.goldLight,
     x: 100,
     y: 750,
-    delay: 90,
+    delay: 135,
   },
   {
     label: "Remote Workers",
@@ -71,16 +71,16 @@ const trendStats = [
     color: molt.colors.blue,
     x: 1620,
     y: 740,
-    delay: 105,
+    delay: 155,
   },
 ];
 
 /* ── Technology trend icons ── */
 const trendIcons = [
-  { icon: "chip", x: 180, y: 380, delay: 55, color: molt.colors.gold },
-  { icon: "cloud", x: 1720, y: 400, delay: 70, color: molt.colors.cyan },
-  { icon: "graph", x: 140, y: 550, delay: 85, color: molt.colors.goldLight },
-  { icon: "network", x: 1740, y: 560, delay: 100, color: molt.colors.purple },
+  { icon: "chip", x: 180, y: 380, delay: 80, color: molt.colors.gold },
+  { icon: "cloud", x: 1720, y: 400, delay: 100, color: molt.colors.cyan },
+  { icon: "graph", x: 140, y: 550, delay: 125, color: molt.colors.goldLight },
+  { icon: "network", x: 1740, y: 560, delay: 145, color: molt.colors.purple },
 ];
 
 /* ── Film grain noise overlay ── */
@@ -369,13 +369,13 @@ export const MoltScene6Timeline: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  /* ── Exit fade with scale-down (last 25 frames: 339-364) ── */
-  const exitOpacity = interpolate(frame, [339, 364], [1, 0], {
+  /* ── Exit fade with scale-down (last 25 frames: 496-521) ── */
+  const exitOpacity = interpolate(frame, [496, 521], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [339, 364], [1, 0.97], {
+  const exitScale = interpolate(frame, [496, 521], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
@@ -410,16 +410,16 @@ export const MoltScene6Timeline: React.FC = () => {
     }),
   );
 
-  /* ── Timeline connecting line (faster to match earlier milestones) ── */
-  const lineProgress = interpolate(frame, [15, 130], [0, 1], {
+  /* ── Timeline connecting line ── */
+  const lineProgress = interpolate(frame, [20, 200], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
-  /* ── Bottom message spring (shows earlier for narration sync) ── */
+  /* ── Bottom message spring (synced to "The platforms that establish..." narration) ── */
   const bottomSpring = spring({
-    frame: Math.max(0, frame - 140),
+    frame: Math.max(0, frame - 300),
     fps,
     config: { damping: 24, stiffness: 130 },
   });
@@ -443,8 +443,8 @@ export const MoltScene6Timeline: React.FC = () => {
     }),
   );
 
-  /* ── Trend line progress (faster to match shortened scene) ── */
-  const trendLineProgress = interpolate(frame, [30, 130], [0, 1], {
+  /* ── Trend line progress ── */
+  const trendLineProgress = interpolate(frame, [40, 200], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),

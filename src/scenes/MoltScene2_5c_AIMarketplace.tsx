@@ -41,12 +41,12 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
 
   /* ── Exit ── */
-  const exitOpacity = interpolate(frame, [163, 186], [1, 0], {
+  const exitOpacity = interpolate(frame, [172, 195], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [163, 186], [1, 0.97], {
+  const exitScale = interpolate(frame, [172, 195], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -54,7 +54,7 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   const globalOpacity = entranceOpacity * exitOpacity;
 
   /* ── Phase 1: "No marketplace" (0-125) ── */
-  const phase1Opacity = interpolate(frame, [95, 125], [1, 0], {
+  const phase1Opacity = interpolate(frame, [100, 132], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -68,12 +68,12 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
 
   /* ── Phase 2: "until MoltMarket" (125+) ── */
   const moltSpring = spring({
-    frame: Math.max(0, frame - 125),
+    frame: Math.max(0, frame - 132),
     fps,
     config: { damping: 22, stiffness: 140 },
   });
   const moltY = interpolate(moltSpring, [0, 1], [25, 0]);
-  const goldFlash = interpolate(frame, [125, 147, 170], [0, 0.25, 0], {
+  const goldFlash = interpolate(frame, [132, 155, 178], [0, 0.25, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

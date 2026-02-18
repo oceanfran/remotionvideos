@@ -58,12 +58,12 @@ export const MoltScene2_5a_RemoteWork: React.FC = () => {
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const exitOpacity = interpolate(frame, [78, 100], [1, 0], {
+  const exitOpacity = interpolate(frame, [83, 105], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [78, 100], [1, 0.97], {
+  const exitScale = interpolate(frame, [83, 105], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -87,7 +87,7 @@ export const MoltScene2_5a_RemoteWork: React.FC = () => {
   const globeScale = interpolate(globeSpring, [0, 1], [0.7, 1]);
 
   /* ── Globe rotation effect (subtle) ── */
-  const globeRotation = interpolate(frame, [0, 100], [0, 12], {
+  const globeRotation = interpolate(frame, [0, 105], [0, 12], {
     extrapolateRight: "clamp",
   });
 
