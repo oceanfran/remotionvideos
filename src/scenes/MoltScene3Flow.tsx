@@ -48,11 +48,11 @@ const FLOW_CONFIG: Record<string, FlowConfig> = {
   "ai-to-ai": {
     leftType: "ai",
     rightType: "ai",
-    leftLabel: "Needs skills",
-    rightLabel: "Hired directly",
+    leftLabel: "Outsources task",
+    rightLabel: "Has the right tools",
     topLabel: "AI → AI",
     accent: molt.colors.purple,
-    headline: "An agent hires another agent directly",
+    headline: "An agent outsources to the AI with the right skills",
   },
 };
 

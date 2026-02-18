@@ -19,19 +19,19 @@ const milestones = [
     year: "2026",
     label: "Early Adopters",
     color: molt.colors.gold,
-    delay: 45,
+    delay: 18,
   },
   {
     year: "2028",
     label: "Mainstream Adoption",
     color: molt.colors.goldLight,
-    delay: 85,
+    delay: 65,
   },
   {
     year: "2030",
     label: "The New Normal",
     color: molt.colors.goldLight,
-    delay: 125,
+    delay: 110,
   },
 ];
 
@@ -369,13 +369,13 @@ export const MoltScene6Timeline: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  /* ── Exit fade with scale-down (last 25 frames: 373-398) ── */
-  const exitOpacity = interpolate(frame, [373, 398], [1, 0], {
+  /* ── Exit fade with scale-down (last 25 frames: 273-298) ── */
+  const exitOpacity = interpolate(frame, [273, 298], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [373, 398], [1, 0.97], {
+  const exitScale = interpolate(frame, [273, 298], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
@@ -410,16 +410,16 @@ export const MoltScene6Timeline: React.FC = () => {
     }),
   );
 
-  /* ── Timeline connecting line ── */
-  const lineProgress = interpolate(frame, [40, 155], [0, 1], {
+  /* ── Timeline connecting line (faster to match earlier milestones) ── */
+  const lineProgress = interpolate(frame, [15, 130], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
 
-  /* ── Bottom message spring ── */
+  /* ── Bottom message spring (shows earlier for narration sync) ── */
   const bottomSpring = spring({
-    frame: Math.max(0, frame - 175),
+    frame: Math.max(0, frame - 140),
     fps,
     config: { damping: 24, stiffness: 130 },
   });
@@ -443,8 +443,8 @@ export const MoltScene6Timeline: React.FC = () => {
     }),
   );
 
-  /* ── Trend line progress ── */
-  const trendLineProgress = interpolate(frame, [50, 160], [0, 1], {
+  /* ── Trend line progress (faster to match shortened scene) ── */
+  const trendLineProgress = interpolate(frame, [30, 130], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
@@ -650,7 +650,7 @@ export const MoltScene6Timeline: React.FC = () => {
               WebkitTextFillColor: "transparent",
             }}
           >
-            inevitable
+            evolution
           </span>
         </div>
       </div>

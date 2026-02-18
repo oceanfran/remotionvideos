@@ -116,49 +116,49 @@ export const MoltScene7CTA: React.FC = () => {
     easing: Easing.out(Easing.cubic),
   });
 
-  // ── "That's MoltMarket" bridge text (frames 0-40, quick) ──
-  const bridgeOpacity = interpolate(frame, [0, 8, 25, 40], [0, 1, 1, 0], {
+  // ── "That's MoltMarket" bridge text (frames 0-70, more breathing room) ──
+  const bridgeOpacity = interpolate(frame, [0, 10, 50, 70], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const bridgeScale = interpolate(frame, [0, 8], [0.95, 1], {
+  const bridgeScale = interpolate(frame, [0, 10], [0.95, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  // ── Element springs (shifted 42 frames earlier) ──
-  const overlineSpring = hd(40, 26, 140);
+  // ── Element springs (spaced out for less rushed feel) ──
+  const overlineSpring = hd(65, 26, 140);
   const overlineY = interpolate(overlineSpring, [0, 1], [25, 0]);
 
   // Logo coin entrance
-  const logoSpring = hd(50, 24, 160);
+  const logoSpring = hd(80, 24, 160);
   const logoY = interpolate(logoSpring, [0, 1], [30, 0]);
   const logoScale = interpolate(logoSpring, [0, 1], [0.85, 1]);
 
   // Brand name entrance (after coin)
-  const brandSpring = hd(65, 24, 150);
+  const brandSpring = hd(95, 24, 150);
   const brandY = interpolate(brandSpring, [0, 1], [25, 0]);
 
-  // URL typewriter: starts after brand, types 14 chars over ~50 frames
+  // URL typewriter: starts after brand, types 14 chars over ~60 frames (slower)
   const urlText = "moltmarket.org";
-  const urlContainerOpacity = interpolate(frame, [100, 110], [0, 1], {
+  const urlContainerOpacity = interpolate(frame, [125, 135], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const urlProgress = interpolate(frame, [110, 160], [0, urlText.length], {
+  const urlProgress = interpolate(frame, [135, 200], [0, urlText.length], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const visibleUrl = urlText.slice(0, Math.floor(urlProgress));
   const cursorVisible = Math.floor(frame / 15) % 2 === 0;
-  const showCursor = frame >= 105 && frame < 287;
+  const showCursor = frame >= 130 && frame < 387;
 
   // Button entrance
-  const buttonSpring = hd(160, 22, 130);
+  const buttonSpring = hd(200, 22, 130);
   const buttonY = interpolate(buttonSpring, [0, 1], [20, 0]);
 
   // Tagline entrance
-  const taglineSpring = hd(175, 28, 120);
+  const taglineSpring = hd(220, 28, 120);
   const taglineY = interpolate(taglineSpring, [0, 1], [20, 0]);
 
   // ── Pulsing glow behind logo (subtle 0.15 oscillation) ──
@@ -171,8 +171,8 @@ export const MoltScene7CTA: React.FC = () => {
   const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
   const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // ── Fade to black (last 30 frames: 257-287) ────
-  const fadeToBlack = interpolate(frame, [257, 287], [0, 1], {
+  // ── Fade to black (last 30 frames: 357-387) ────
+  const fadeToBlack = interpolate(frame, [357, 387], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),

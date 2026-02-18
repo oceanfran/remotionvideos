@@ -88,12 +88,12 @@ export const MoltScene1World: React.FC = () => {
         transform: `scale(${zoomScale * exitScale})`,
       }}
     >
-      {/* Deep atmospheric background */}
+      {/* Deep atmospheric background (neutral, no blue tint) */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: `radial-gradient(ellipse 100% 80% at 50% 50%, #141420, ${molt.colors.bg})`,
+          background: `radial-gradient(ellipse 100% 80% at 50% 50%, #141414, ${molt.colors.bg})`,
         }}
       />
 

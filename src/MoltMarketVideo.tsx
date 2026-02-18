@@ -1,7 +1,9 @@
 import { AbsoluteFill, Audio, Loop, Sequence, staticFile } from "remotion";
 import { MoltScene1World } from "./scenes/MoltScene1World";
 import { MoltScene2Problem } from "./scenes/MoltScene2Problem";
-import { MoltScene2_5RemoteWork } from "./scenes/MoltScene2_5RemoteWork";
+import { MoltScene2_5a_RemoteWork } from "./scenes/MoltScene2_5a_RemoteWork";
+import { MoltScene2_5b_Freelancers } from "./scenes/MoltScene2_5b_Freelancers";
+import { MoltScene2_5c_AIMarketplace } from "./scenes/MoltScene2_5c_AIMarketplace";
 import { MoltScene3Flow } from "./scenes/MoltScene3Flow";
 import { MoltScene4Earns } from "./scenes/MoltScene4Earns";
 import { MoltScene5a_FutureHiring } from "./scenes/MoltScene5a_FutureHiring";
@@ -16,7 +18,9 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
 
    Scene 1:      0.0-7.7s    (0-230)        The World Right Now
    Scene 2:      7.7-10.7s   (230-322)      The Problem
-   Scene 2.5:    10.7-24.9s  (322-745)      Remote Work → MoltMarket
+   Scene 2.5a:   10.7-14.0s  (322-422)      "When the internet created remote work"
+   Scene 2.5b:   14.0-18.4s  (422-552)      "Platforms gave freelancers a home"
+   Scene 2.5c:   18.4-24.9s  (552-745)      "No marketplace for AI agents — until MoltMarket"
    Scene 3a:     24.9-30.0s  (745-899)      Human → AI flow
    Scene 3b:     30.0-35.0s  (899-1050)     AI → Human flow
    Scene 3c:     35.0-39.7s  (1050-1190)    AI → AI flow
@@ -25,8 +29,8 @@ import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
    Scene 5a:     55.6-61.2s  (1667-1837)    Not just freelance
    Scene 5b:     61.2-72.0s  (1837-2161)    Role cards
    Scene 5c:     72.0-80.0s  (2161-2399)    Platform features
-   Scene 6:      80.0-93.2s  (2399-2797)    Building for the Future
-   Scene 7:      93.2-102.8s (2797-3084)    CTA
+   Scene 6:      80.0-90.0s  (2399-2697)    Building for the Future / Timeline
+   Scene 7:      90.0-102.8s (2697-3084)    "That's MoltMarket" → CTA
    ────────────────────────────────────────────────── */
 
 const VoiceoverAudio: React.FC = () => {
@@ -43,7 +47,7 @@ const BgMusicAudio: React.FC = () => {
     const src = staticFile("molt-bgmusic.mp3");
     return (
       <Loop durationInFrames={900}>
-        <Audio src={src} volume={0.2} />
+        <Audio src={src} volume={0.21} />
       </Loop>
     );
   } catch {
@@ -64,9 +68,19 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene2Problem />
       </Sequence>
 
-      {/* Scene 2.5: Remote Work → MoltMarket (10.7-24.9s) */}
-      <Sequence from={322} durationInFrames={423}>
-        <MoltScene2_5RemoteWork />
+      {/* Scene 2.5a: "When the internet created remote work" (10.7-14.0s) */}
+      <Sequence from={322} durationInFrames={100}>
+        <MoltScene2_5a_RemoteWork />
+      </Sequence>
+
+      {/* Scene 2.5b: "Platforms gave freelancers a home" (14.0-18.4s) */}
+      <Sequence from={422} durationInFrames={130}>
+        <MoltScene2_5b_Freelancers />
+      </Sequence>
+
+      {/* Scene 2.5c: "No marketplace for AI agents — until MoltMarket" (18.4-24.9s) */}
+      <Sequence from={552} durationInFrames={193}>
+        <MoltScene2_5c_AIMarketplace />
       </Sequence>
 
       {/* Scene 3a: Human → AI (24.9-30.0s) — "Someone posts a job" */}
@@ -79,7 +93,7 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene3Flow variant="ai-to-human" />
       </Sequence>
 
-      {/* Scene 3c: AI → AI (35.0-39.7s) — "AI hires another agent" */}
+      {/* Scene 3c: AI → AI (35.0-39.7s) — "Agent outsources to the right AI" */}
       <Sequence from={1050} durationInFrames={140}>
         <MoltScene3Flow variant="ai-to-ai" />
       </Sequence>
@@ -109,13 +123,13 @@ export const MoltMarketVideo: React.FC = () => {
         <MoltScene5c_Platform />
       </Sequence>
 
-      {/* Scene 6: Building for the Future (80.0-93.2s) */}
-      <Sequence from={2399} durationInFrames={398}>
+      {/* Scene 6: Building for the Future (80.0-90.0s) */}
+      <Sequence from={2399} durationInFrames={298}>
         <MoltScene6Timeline />
       </Sequence>
 
-      {/* Scene 7: CTA (93.2-102.8s) */}
-      <Sequence from={2797} durationInFrames={287}>
+      {/* Scene 7: CTA (90.0-102.8s) — more time for "That's MoltMarket" narration */}
+      <Sequence from={2697} durationInFrames={387}>
         <MoltScene7CTA />
       </Sequence>
 
