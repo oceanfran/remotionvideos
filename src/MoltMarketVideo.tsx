@@ -13,24 +13,24 @@ import { MoltScene6Timeline } from "./scenes/MoltScene6Timeline";
 import { MoltScene7CTA } from "./scenes/MoltScene7CTA";
 
 /* ──────────────────────────────────────────────────
-   Molt Market — ~103s promo  (1920×1080, 30fps)
-   Total: 3084 frames (synced to voiceover timestamps)
+   Molt Market — ~99s promo  (1920×1080, 30fps)
+   Total: 2972 frames (synced to regenerated voiceover)
 
-   Scene 1:      0.0-7.7s    (0-230)        The World Right Now
-   Scene 2:      7.7-10.7s   (230-322)      The Problem
-   Scene 2.5a:   10.7-14.0s  (322-422)      "When the internet created remote work"
-   Scene 2.5b:   14.0-18.4s  (422-552)      "Platforms gave freelancers a home"
-   Scene 2.5c:   18.4-24.9s  (552-745)      "No marketplace for AI agents — until MoltMarket"
-   Scene 3a:     24.9-30.0s  (745-899)      Human → AI flow
-   Scene 3b:     30.0-35.0s  (899-1050)     AI → Human flow
-   Scene 3c:     35.0-39.7s  (1050-1190)    AI → AI flow
-   Scene 3d:     39.7-42.8s  (1190-1283)    Every direction
-   Scene 4:      42.8-55.6s  (1283-1667)    Your Agent Earns for You
-   Scene 5a:     55.6-61.2s  (1667-1837)    Not just freelance
-   Scene 5b:     61.2-72.0s  (1837-2161)    Role cards
-   Scene 5c:     72.0-80.0s  (2161-2399)    Platform features
-   Scene 6:      80.0-90.0s  (2399-2697)    Building for the Future / Timeline
-   Scene 7:      90.0-102.8s (2697-3084)    "That's MoltMarket" → CTA
+   Scene 1:      0.0-6.5s    (0-194)        The World Right Now
+   Scene 2:      6.5-9.7s    (194-290)      The Problem
+   Scene 2.5a:   9.7-13.0s   (290-390)      "When the internet created remote work"
+   Scene 2.5b:   13.0-17.3s  (390-520)      "Platforms gave freelancers a home"
+   Scene 2.5c:   17.3-23.5s  (520-706)      "No marketplace for AI agents — until MoltMarket"
+   Scene 3a:     23.5-28.5s  (706-856)      Human → AI flow
+   Scene 3b:     28.5-33.8s  (856-1014)     AI → Human flow
+   Scene 3c:     33.8-39.1s  (1014-1173)    AI → AI flow
+   Scene 3d:     39.1-41.7s  (1173-1251)    Every direction
+   Scene 4:      41.7-54.7s  (1251-1642)    Your Agent Earns for You
+   Scene 5a:     54.7-60.0s  (1642-1800)    Not just freelance
+   Scene 5b:     60.0-70.2s  (1800-2107)    Role cards
+   Scene 5c:     70.2-77.3s  (2107-2320)    Platform features
+   Scene 6:      77.3-89.5s  (2320-2684)    Building for the Future
+   Scene 7:      89.5-99.1s  (2684-2972)    CTA
    ────────────────────────────────────────────────── */
 
 const VoiceoverAudio: React.FC = () => {
@@ -58,83 +58,83 @@ const BgMusicAudio: React.FC = () => {
 export const MoltMarketVideo: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#0A0A0B" }}>
-      {/* Scene 1: The World Right Now (0-7.7s) */}
-      <Sequence from={0} durationInFrames={230}>
+      {/* Scene 1: The World Right Now (0-6.5s) */}
+      <Sequence from={0} durationInFrames={194}>
         <MoltScene1World />
       </Sequence>
 
-      {/* Scene 2: The Problem (7.7-10.7s) */}
-      <Sequence from={230} durationInFrames={92}>
+      {/* Scene 2: The Problem (6.5-9.7s) */}
+      <Sequence from={194} durationInFrames={96}>
         <MoltScene2Problem />
       </Sequence>
 
-      {/* Scene 2.5a: "When the internet created remote work" (10.7-14.0s) */}
-      <Sequence from={322} durationInFrames={100}>
+      {/* Scene 2.5a: "When the internet created remote work" (9.7-13.0s) */}
+      <Sequence from={290} durationInFrames={100}>
         <MoltScene2_5a_RemoteWork />
       </Sequence>
 
-      {/* Scene 2.5b: "Platforms gave freelancers a home" (14.0-18.4s) */}
-      <Sequence from={422} durationInFrames={130}>
+      {/* Scene 2.5b: "Platforms gave freelancers a home" (13.0-17.3s) */}
+      <Sequence from={390} durationInFrames={130}>
         <MoltScene2_5b_Freelancers />
       </Sequence>
 
-      {/* Scene 2.5c: "No marketplace for AI agents — until MoltMarket" (18.4-24.9s) */}
-      <Sequence from={552} durationInFrames={193}>
+      {/* Scene 2.5c: "No marketplace for AI agents — until MoltMarket" (17.3-23.5s) */}
+      <Sequence from={520} durationInFrames={186}>
         <MoltScene2_5c_AIMarketplace />
       </Sequence>
 
-      {/* Scene 3a: Human → AI (24.9-30.0s) — "Someone posts a job" */}
-      <Sequence from={745} durationInFrames={154}>
+      {/* Scene 3a: Human → AI (23.5-28.5s) */}
+      <Sequence from={706} durationInFrames={150}>
         <MoltScene3Flow variant="human-to-ai" />
       </Sequence>
 
-      {/* Scene 3b: AI → Human (30.0-35.0s) — "AI posts a task" */}
-      <Sequence from={899} durationInFrames={151}>
+      {/* Scene 3b: AI → Human (28.5-33.8s) */}
+      <Sequence from={856} durationInFrames={158}>
         <MoltScene3Flow variant="ai-to-human" />
       </Sequence>
 
-      {/* Scene 3c: AI → AI (35.0-39.7s) — "Agent outsources to the right AI" */}
-      <Sequence from={1050} durationInFrames={140}>
+      {/* Scene 3c: AI → AI (33.8-39.1s) */}
+      <Sequence from={1014} durationInFrames={159}>
         <MoltScene3Flow variant="ai-to-ai" />
       </Sequence>
 
-      {/* Scene 3d: Every Direction (39.7-42.8s) — "Every direction" */}
-      <Sequence from={1190} durationInFrames={93}>
+      {/* Scene 3d: Every Direction (39.1-41.7s) */}
+      <Sequence from={1173} durationInFrames={78}>
         <MoltScene3Flow variant="all-directions" />
       </Sequence>
 
-      {/* Scene 4: Your Agent Earns for You (42.8-55.6s) */}
-      <Sequence from={1283} durationInFrames={384}>
+      {/* Scene 4: Your Agent Earns for You (41.7-54.7s) */}
+      <Sequence from={1251} durationInFrames={391}>
         <MoltScene4Earns />
       </Sequence>
 
-      {/* Scene 5a: Not just freelance (55.6-61.2s) */}
-      <Sequence from={1667} durationInFrames={170}>
+      {/* Scene 5a: Not just freelance (54.7-60.0s) */}
+      <Sequence from={1642} durationInFrames={158}>
         <MoltScene5a_FutureHiring />
       </Sequence>
 
-      {/* Scene 5b: Role cards (61.2-72.0s) */}
-      <Sequence from={1837} durationInFrames={324}>
+      {/* Scene 5b: Role cards (60.0-70.2s) */}
+      <Sequence from={1800} durationInFrames={307}>
         <MoltScene5OrgChart />
       </Sequence>
 
-      {/* Scene 5c: Platform features (72.0-80.0s) */}
-      <Sequence from={2161} durationInFrames={238}>
+      {/* Scene 5c: Platform features (70.2-77.3s) */}
+      <Sequence from={2107} durationInFrames={213}>
         <MoltScene5c_Platform />
       </Sequence>
 
-      {/* Scene 6: Building for the Future (80.0-90.0s) */}
-      <Sequence from={2399} durationInFrames={298}>
+      {/* Scene 6: Building for the Future (77.3-89.5s) */}
+      <Sequence from={2320} durationInFrames={364}>
         <MoltScene6Timeline />
       </Sequence>
 
-      {/* Scene 7: CTA (90.0-102.8s) — more time for "That's MoltMarket" narration */}
-      <Sequence from={2697} durationInFrames={387}>
+      {/* Scene 7: CTA (89.5-99.1s) */}
+      <Sequence from={2684} durationInFrames={288}>
         <MoltScene7CTA />
       </Sequence>
 
-      {/* Audio layers — voiceover plays once and stops naturally */}
-      <Sequence from={0} durationInFrames={3084}>
+      {/* Audio layers */}
+      <Sequence from={0} durationInFrames={2972}>
         <VoiceoverAudio />
       </Sequence>
       <BgMusicAudio />

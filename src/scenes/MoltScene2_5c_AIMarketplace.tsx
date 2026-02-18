@@ -12,11 +12,11 @@ import { molt } from "../moltTheme";
    Scene 2.5c — "But there's never been a marketplace
    built for AI agents — until MoltMarket"
    Disconnected AI agents → gold MoltMarket reveal.
-   ~193 frames (6.4s)
+   ~186 frames (6.2s)
 
    Narration sync:
-   0-130: "But there's never been a marketplace built for AI agents"
-   130-193: "until MoltMarket"
+   0-125: "But there's never been a marketplace built for AI agents"
+   125-186: "until MoltMarket"
    ────────────────────────────────────────────────── */
 
 /* ── AI agent nodes (appear disconnected) ── */
@@ -41,20 +41,20 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
 
   /* ── Exit ── */
-  const exitOpacity = interpolate(frame, [170, 193], [1, 0], {
+  const exitOpacity = interpolate(frame, [163, 186], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
   });
-  const exitScale = interpolate(frame, [170, 193], [1, 0.97], {
+  const exitScale = interpolate(frame, [163, 186], [1, 0.97], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   const globalOpacity = entranceOpacity * exitOpacity;
 
-  /* ── Phase 1: "No marketplace" (0-130) ── */
-  const phase1Opacity = interpolate(frame, [100, 130], [1, 0], {
+  /* ── Phase 1: "No marketplace" (0-125) ── */
+  const phase1Opacity = interpolate(frame, [95, 125], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -66,14 +66,14 @@ export const MoltScene2_5c_AIMarketplace: React.FC = () => {
   });
   const headlineY = interpolate(headlineSpring, [0, 1], [30, 0]);
 
-  /* ── Phase 2: "until MoltMarket" (130+) ── */
+  /* ── Phase 2: "until MoltMarket" (125+) ── */
   const moltSpring = spring({
-    frame: Math.max(0, frame - 130),
+    frame: Math.max(0, frame - 125),
     fps,
     config: { damping: 22, stiffness: 140 },
   });
   const moltY = interpolate(moltSpring, [0, 1], [25, 0]);
-  const goldFlash = interpolate(frame, [130, 152, 175], [0, 0.25, 0], {
+  const goldFlash = interpolate(frame, [125, 147, 170], [0, 0.25, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });

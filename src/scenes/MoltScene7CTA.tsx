@@ -151,7 +151,7 @@ export const MoltScene7CTA: React.FC = () => {
   });
   const visibleUrl = urlText.slice(0, Math.floor(urlProgress));
   const cursorVisible = Math.floor(frame / 15) % 2 === 0;
-  const showCursor = frame >= 130 && frame < 387;
+  const showCursor = frame >= 130 && frame < 288;
 
   // Button entrance
   const buttonSpring = hd(200, 22, 130);
@@ -171,8 +171,8 @@ export const MoltScene7CTA: React.FC = () => {
   const btnGlowSpread = 25 + Math.sin(frame * 0.06) * 12;
   const btnGlowOpacity = 0.3 + Math.sin(frame * 0.06) * 0.12;
 
-  // ── Fade to black (last 30 frames: 357-387) ────
-  const fadeToBlack = interpolate(frame, [357, 387], [0, 1], {
+  // ── Fade to black (last 30 frames: 258-288) ────
+  const fadeToBlack = interpolate(frame, [258, 288], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.in(Easing.cubic),
